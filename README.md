@@ -11,5 +11,5 @@ Bei Herr Göddeke.
  3) Lade die bisherigen Dinge aus der online Repository herunter mit dem Befehl : "git pull https://github.com/JohnCenaVsTheRock/CP-Block-2.git". (Jedes Mal, bevor du an deinem Code arbeitest, solltest du diesen Befehl ausführen, um auf dem neusten Stand zu sein.)
 ## Hochladen:
  1) Wenn du fertig mit coden bist, benutze den Befehl "git add .".
- 2) Im Anschluss benutze den Befehl "git commit -m 'MESSAGE'". ('MESSAGE' ist eine optionale Nachricht die z.B mit deiner Veränderung am Code zu tun hat.)
+ 2) Im Anschluss benutze den Befehl "git commit -m 'MESSAGE'". (MESSAGE ist eine optionale Nachricht die z.B mit deiner Veränderung am Code zu tun hat.)
  3) Lade dein Ergebniss hoch mit dem Befehl : "git push https://github.com/JohnCenaVsTheRock/CP-Block-2.git".
