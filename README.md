@@ -29,18 +29,18 @@ AUFGABENSTELLUNG und ANWEISUNGEN Folder beinhaltet die Aufgabenstellung und weit
 
 
 # Schritt 2 (Aufteilung)
-hier wird klargestellt wer was tut. Schreibt hier bitte immer rein was ihr tut und am besten wie euer Programmteil mit den anderen zu komunizieren hat (zb wenn's ein py-modul werden soll, das einfach erwähnen und wie es heisst...). Alle Dateinamen an denen ihr arbeitet sollten erwähnt werden in einer der folgenden Sektionen.
+Hier wird klargestellt wer was tut. Schreibt hier bitte immer rein was ihr tut und am besten wie euer Programmteil mit den anderen zu komunizieren hat (zb wenn's ein py-modul werden soll, das einfach erwähnen und wie es heisst...). Alle Dateinamen an denen ihr arbeitet sollten erwähnt werden in einer der folgenden Sektionen.
 
-Allgemeiner Programmteil: 
-main: Ruft die Plotfunktion von plot_stuff auf.
-functions: Definiert die Klasse Funktionen und wird von allen anderen Dateien aufgerufen.
+Allgemeiner Programmteil: \n
+main: Ruft die Plotfunktion von plot_stuff auf.\n
+functions: Definiert die Klasse Funktionen und wird von allen anderen Dateien aufgerufen.\n
 
 ## Valentino
 Programmteil: newton
 
 ## Karo
-Programmteil: plot_stuff
-Interaktion: ruft das Netwonverfahren auf
+Programmteil: 
+plot_stuff: ruft das Netwonverfahren auf
 
 ## Momo
 
