@@ -54,21 +54,21 @@ import subprocess
 subprocess.run(["/newton_c++.exe", "KARO's INPUT"])
 ```
 der INPUT ist von der Form:
-<\br>[
-<\br>
-__				__<\br>
-| [x_1,y_1] & [x_1, y_2] & ...   |<\br>
-| [x_2,y_1] & [x_2, y_2] & ...   |<\br>
-| .				 |<\br>
-| .				 |<\br>
-| .				 |<\br>
-|__			       __|<\br>
-<\br>
-,<\br>
+ <br>[
+ <br>
+__				__ <br>
+| [x_1,y_1] & [x_1, y_2] & ...   | <br>
+| [x_2,y_1] & [x_2, y_2] & ...   | <br>
+| .				 | <br>
+| .				 | <br>
+| .				 | <br>
+|__			       __| <br>
+ <br>
+, <br>
 FUNKTION
-<\br>
-<\br>]<\br>
-also eine mxn Matrix ist <\br>
+ <br>
+ <br>] <br>
+also eine mxn Matrix ist  <br>
 
 Wobei der INDEX von zB "[x_1,y_1]" (also 1,1), der INDEX des PIXELS aus dem resultierenden Bild ist, und "x_1,y_1" entsprechend der Realteil und Imaginärteil der Zahl "z" aus der Gausebene ist, die ausgewertet werden soll.
 
