@@ -56,13 +56,13 @@ subprocess.run(["/newton_c++.exe", "KARO's INPUT"])
 der INPUT ist von der Form:
  <br>[
  <br>
-__				__ <br>
+__&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;__ <br>
 | [x_1,y_1] & [x_1, y_2] & ...   | <br>
 | [x_2,y_1] & [x_2, y_2] & ...   | <br>
-| .				 | <br>
-| .				 | <br>
-| .				 | <br>
-|__			       __| <br>
+| .&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;				 | <br>
+| .&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;				 | <br>
+| .&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;				 | <br>
+|__&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;			       __| <br>
  <br>
 , <br>
 FUNKTION
