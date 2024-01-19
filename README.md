@@ -45,7 +45,6 @@ Ich werde das selbe wie Valentino machen, nu rin C++. Es wird sich um ein Progra
 ```
 import subprocess
 subprocess.run(["/newton_c++.exe", "KARO's INPUT"])
-\)
 ```
 Dann wird in der Varibale "return_value"
 ### [DOKUMENTATION-newton (rewisited)]
@@ -53,10 +52,9 @@ Der INPUT kommt von KARO's "main.py" (also zb):
 ```
 import subprocess
 subprocess.run(["/newton_c++.exe", "KARO's INPUT"])
-\)
 ```
 der INPUT ist von der Form:
-\(
+$
 \begin{bmatrix}
 [x_1,y_1] & [x_1, y_2] & ... \\
 [x_2,y_1] & [x_2, y_2] & ... \\
@@ -64,7 +62,7 @@ der INPUT ist von der Form:
 .\\
 .
 \end{bmatrix}
-\)
+$
 
 
 ### [BESCHREIBUNG-functions]
