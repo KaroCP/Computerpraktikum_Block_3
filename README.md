@@ -54,7 +54,14 @@ import subprocess
 subprocess.run(["/newton_c++.exe", "KARO's INPUT"])
 ```
 der INPUT ist von der Form:
-$$ x= 35 $$
+$$x = {-b \pm \sqrt{b^2-4ac} \over 2a}$$
+$$\begin{bmatrix}
+[x_1,y_1] & [x_1, y_2] & ... \\
+[x_2,y_1] & [x_2, y_2] & ... \\
+.\\
+.\\
+.
+\end{bmatrix}$$
 
 
 ### [BESCHREIBUNG-functions]
