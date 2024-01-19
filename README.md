@@ -14,7 +14,8 @@ bei Herr Göddeke
  2) Im Anschluss benutze den Befehl "git commit -m 'MESSAGE'". (MESSAGE ist eine optionale Nachricht die z.B mit deiner Veränderung am Code zu tun hat.)
  3) Lade dein Ergebniss hoch mit dem Befehl : "git push https://github.com/KaroCP/Computerpraktikum_Block_3".
 # Aufgaben
-- Newtonverfahren mplementieren (Valentino)
+Die AUFGABENSTELLUNG und ANWEISUNGEN Folder beinhaltet die Aufgabenstellung und weitere Hilfen zum Thema. Lies das Thema "Fraktale", das ist unser Thema. Die Einzelaufgaben sind:
+- Newtonverfahren implementieren (Valentino)
 - Beispiele suchen 
 - Laufzeit verbessern, Insbesondere Zeiten vergleichen, Konvergenzordnung vergleichen (Momo)
 - Interaktion implementieren (Karo)
@@ -22,38 +23,17 @@ bei Herr Göddeke
 - Andere Berechnungsverfahren implementieren (Valentino)
 - Parameterabhängige Funktionen als Beispiele machen
 
+# Aufteilung
+Hier wird klargestellt wer was tut. Schreibt hier bitte immer rein, was ihr tut und am besten wie jeder euer Programmteile mit den anderen zu komunizieren hat. (Z.B. wenn's ein py-modul werden soll, das einfach erwähnen und wie es heißt...). Alle Dateinamen an denen ihr arbeitet, sollten in einer der folgenden Sektionen erwähnt werden.
 
-# Schritt 1 (Anweisung)
-AUFGABENSTELLUNG und ANWEISUNGEN Folder beinhaltet die Aufgabenstellung und weitere Hilfen zum Thema, lese das Thema "Fraktale" durch darum geht's
-
-
-
-# Schritt 2 (Aufteilung)
-Hier wird klargestellt wer was tut. Schreibt hier bitte immer rein was ihr tut und am besten wie euer Programmteil mit den anderen zu komunizieren hat (zb wenn's ein py-modul werden soll, das einfach erwähnen und wie es heisst...). Alle Dateinamen an denen ihr arbeitet sollten erwähnt werden in einer der folgenden Sektionen.
-
-Allgemeiner Programmteil: \n
-main: Ruft die Plotfunktion von plot_stuff auf.\n
-functions: Definiert die Klasse Funktionen und wird von allen anderen Dateien aufgerufen.\n
+## Allgemeiner Programmteil:
+main: Ruft plot - die Plotfunktion von plot_stuff - auf. <br />
 
 ## Valentino
-Programmteil: newton
+newton: Wird von plot_functions aufgerufen.
 
 ## Karo
-Programmteil: 
-plot_stuff: ruft das Netwonverfahren auf
+plot_stuff: Ruft newton_approximation - das Newtonverfahren in newton - auf.
 
 ## Momo
-### Programmteil: newton (revisited)
-### [Datei/Ordner]
-ORDNER : "newton_c++"	
-### [BESCHRIEBUNG]	
-Ich werde das selbe wie Valentino machen, nu rin C++. Es wird sich um ein Programm [.exe] handeln, die in python aufgerufen werden kann, zb:
-```
-import os
-return_value = os.system('"PATH/newton_c++.exe"')
-\)
-```
-Dann wird in der Varibale "return_value"
-### [DOKUMENTATION]
- 
 
