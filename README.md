@@ -54,15 +54,7 @@ import subprocess
 subprocess.run(["/newton_c++.exe", "KARO's INPUT"])
 ```
 der INPUT ist von der Form:
-$$
-\begin{bmatrix}
-[x_1,y_1] & [x_1, y_2] & ... \\
-[x_2,y_1] & [x_2, y_2] & ... \\
-.\\
-.\\
-.
-\end{bmatrix}
-$$
+$$ x= 35 $$
 
 
 ### [BESCHREIBUNG-functions]
