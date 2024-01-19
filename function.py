@@ -29,14 +29,13 @@ from newton import newton_approx
 class Fractal: 
     #TODO inplement symbolic calculation of derivative and roots.
     
-    def __init__(self,func,f_diff=None,zeroset=None,max_iter=200,tol=10e-7,dens=50):
+    def __init__(self,func,f_diff=None,zeroset=None,label=None,max_iter=200,tol=10e-7,dens=50):
         """
         Parameters
         ----------
-        func : 1D array with shape (2,2)
-            With functions as entries.
-            [f1(x1,x2)
-             f2(x1,x2)].
+        func : function
+            Function from C to C which will be used to create the fractal.
+            Not anymore: 1D array with shape (2,2). In fact: func= [f1(x1,x2), f2(x1,x2)].
         f_diff : 2D array with shape (2,2), optional
             With functions as entries. The default is None.
             [df1/dx1 df1/dx1
@@ -51,12 +50,12 @@ class Fractal:
         density : int
             number of pixel in each row and colum.
         """
-        self.func = lambda a,b:[np.real(func(a+b*1J)), np.imag(func(a+b*1J))] #TODO
-        # self.func = func
+        self.func = lambda a,b:[np.real(func(a+b*1J)), np.imag(func(a+b*1J))]
         if f_diff == None: self.diff = self.calculate_diff(self.func)
         else: self.diff = f_diff
         if zeroset == None: self.roots = self.calculate_zeroset(self.func)
         else: self.roots = np.append(zeroset,[[np.Inf,np.Inf]], axis=0)
+        self.label = label
         
         self.max_iteration = max_iter
         self.tolerance = tol
@@ -97,6 +96,7 @@ class Fractal:
         color = np.array(h(root_hue,1,iter_light)).transpose(1,2,0)
         color[mask]=1
         self.im = self.ax.imshow(color)
+        self.ax.set_title(self.label)
         # return self.im
         
     
