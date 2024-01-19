@@ -14,10 +14,10 @@ bei Herr Göddeke
  2) Im Anschluss benutze den Befehl "git commit -m 'MESSAGE'". (MESSAGE ist eine optionale Nachricht die z.B mit deiner Veränderung am Code zu tun hat.)
  3) Lade dein Ergebniss hoch mit dem Befehl : "git push https://github.com/KaroCP/Computerpraktikum_Block_3".
 # Aufgaben
-- Newtonverfahren Implementieren
-- Laufzeit verbessern (Momo)
-- Beispiele suchen
-- Interaktion implementieren
+- Newtonverfahren mplementieren (Valentino)
+- Beispiele suchen 
+- Laufzeit verbessern, Insbesondere Zeiten vergleichen, Konvergenzordnung vergleichen (Momo)
+- Interaktion implementieren (Karo)
 - Ableitung und Nullstellenmenge symbolisch berechnen
-- Andere Berechnungsverfahren implementieren
+- Andere Berechnungsverfahren implementieren (Valentino)
 - Parameterabhängige Funktionen als Beispiele machen
