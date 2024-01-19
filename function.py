@@ -19,14 +19,36 @@ from newton import newton_approx #outsorcing of the definition
 
 class Function: # funktioniert bis jetzt nur, wenn man auch Ableitung und Nullstellenmenge eingibt.
     
-    def __init__(self,input_function, f_diff=None, f_zeroset=None):
+    def __init__(self,input_function, f_diff=None):
+        """
+        Parameters
+        ----------
+        input_function : TYPE
+            DESCRIPTION.
+        f_diff : 2D array with shape (2,2), optional
+            With functions as entries. The default is None.
+            [df/dx df/dy
+                ]
+
+        Returns
+        -------
+        None.
+
+        """
         self.f = np.vectorize(lambda x:input_function(x))
         if f_diff == None: self.diff = calculate_diff(self.f)
         else: self.diff = np.vectorize(lambda x:f_diff(x))
-        if f_zeroset == None: self.roots = calculate_zeroset(self.f)
-        else: self.roots = np.append(np.array(f_zeroset),np.Inf)
+        self.newton = np.vectorize(lambda px,py: newton_approx(self.f,self.diff))#,self.roots,[px,py]))
+    
+    
+# In[3]
+
+    
+    def initialize_root(self,zeroset=None):
+        if zeroset == None: self.roots = calculate_zeroset(self.f)
+        else: self.roots = np.append(np.array(zeroset),np.Inf)
         self.colors = np.append(define_colors(self.roots[:-1]),1000)
-        self.newton = np.vectorize(lambda px,py: newton_approx(self.f,self.diff,self.roots,[px,py]))
+     
         
 
 # In[3]
