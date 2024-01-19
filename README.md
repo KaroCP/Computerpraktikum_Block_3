@@ -54,8 +54,8 @@ import subprocess
 subprocess.run(["/newton_c++.exe", "KARO's INPUT"])
 ```
 der INPUT ist von der Form:
-$$\begin{pmatrix}[x_1,y_1] & [x_1, y_2] & ...\\\ [x_2,y_1] & [x_2, y_2] & ... \\\ . \\\ . \\\ . \end{pmatrix}$$
-$$\eqalign{
+$$\begin{pmatrix}a & b\\\ c & d\end{pmatrix}$$
+
 \begin{bmatrix}
 [x_1,y_1] & [x_1, y_2] & ... \\
 [x_2,y_1] & [x_2, y_2] & ... \\
@@ -63,7 +63,6 @@ $$\eqalign{
 .\\
 .
 \end{bmatrix}
-}$$
 
 
 ### [BESCHREIBUNG-functions]
