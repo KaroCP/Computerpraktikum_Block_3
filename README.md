@@ -43,4 +43,17 @@ Programmteil:
 plot_stuff: ruft das Netwonverfahren auf
 
 ## Momo
+### Programmteil: newton (revisited)
+### [Datei/Ordner]
+ORDNER : "newton_c++"	
+### [BESCHRIEBUNG]	
+Ich werde das selbe wie Valentino machen, nu rin C++. Es wird sich um ein Programm [.exe] handeln, die in python aufgerufen werden kann, zb:
+```
+import os
+return_value = os.system('"PATH/newton_c++.exe"')
+\)
+```
+Dann wird in der Varibale "return_value"
+### [DOKUMENTATION]
+ 
 
