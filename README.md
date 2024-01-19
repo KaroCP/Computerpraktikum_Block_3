@@ -34,6 +34,41 @@ newton: Wird von plot_functions aufgerufen.
 
 ## Karo
 plot_stuff: Ruft newton_approximation - das Newtonverfahren in newton - auf.
+functions: inuptfunktion muss komplexe lambdafunktion sein.
 
 ## Momo
+### Programmteil/e : newton (revisited) & functions.
+### [Datei/Ordner]
+ORDNER : "newton_c++" & "function.py"
+### [BESCHRIEBUNG-newton (rewisited)]	
+Ich werde das selbe wie Valentino machen, nu rin C++. Es wird sich um ein Programm [.exe] handeln, die in python aufgerufen werden kann, zb:
+```
+import subprocess
+subprocess.run(["/newton_c++.exe", "KARO's INPUT"])
+\)
+```
+Dann wird in der Varibale "return_value"
+### [DOKUMENTATION-newton (rewisited)]
+Der INPUT kommt von KARO's "main.py" (also zb):
+```
+import subprocess
+subprocess.run(["/newton_c++.exe", "KARO's INPUT"])
+\)
+```
+der INPUT ist von der Form:
+\(
+\begin{bmatrix}
+[x_1,y_1] & [x_1, y_2] & ... \\
+[x_2,y_1] & [x_2, y_2] & ... \\
+.\\
+.\\
+.
+\end{bmatrix}
+\)
 
+
+### [BESCHREIBUNG-functions]
+Definiert die Klasse Funktionen und wird von allen anderen Dateien aufgerufen. MOMO's AUFGABE: zwei kleine Änderungen an der "functions.py" (KARO macht eig das meiste) ich mache nur das ABLEITEN mit sympy oder so
+
+### [DOKUMENTAATION-functions]
+TO BE DONE
