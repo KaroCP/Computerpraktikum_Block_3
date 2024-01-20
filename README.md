@@ -27,19 +27,21 @@ Die AUFGABENSTELLUNG und ANWEISUNGEN Folder beinhaltet die Aufgabenstellung und 
 Hier wird klargestellt wer was tut. Schreibt hier bitte immer rein, was ihr tut und am besten wie jeder euer Programmteile mit den anderen zu komunizieren hat. (Z.B. wenn's ein py-modul werden soll, das einfach erwähnen und wie es heißt...). Alle Dateinamen an denen ihr arbeitet, sollten in einer der folgenden Sektionen erwähnt werden.
 
 ## Allgemeiner Programmteil:
-main: Ruft plot - die Plotfunktion von plot_stuff - auf. <br />
+main: Erstellt ein Fractal und gibt den Nutzer Informationen, wie mit dem Plot interagiert werden kann.
 
 ## Valentino
-newton: Wird von plot_functions aufgerufen.
+newton: Die Funktion newton_approx wird von color_newton in functions aufgerufen.
 
 ## Karo
-plot_stuff: Ruft newton_approximation - das Newtonverfahren in newton - auf.
-functions: inuptfunktion muss komplexe lambdafunktion sein.
+(plot_stuff: Ruft newton_approximation - das Newtonverfahren in newton - auf.) nicht mehr mit wirklichem Nutzen<br>
+functions: Definiert die Klasse Fractal, die Daten wie die genutze Funktion oder das Iterationslevel speichert, den Plot erstellt und die Möglichkeit der Interaktion mit dem Plot definiert.<br>
+Die Funktion (genauso wie ihre Ableitung) werden als Lambdafunkktionen in einer komplexen Zahl eingegeben (z.B. f = lambda z:z**3-1).<br>
+Die Klasse ruft zur Berechnung des Plots - je nach Einstellung - die Funktion newton_approx in newton oder ??? in ?newton_C++? auf.
 
 ## Momo
-### Programmteil/e : newton (revisited) & functions.
+### Programmteil/e : newton (revisited).
 ### [Datei/Ordner]
-ORDNER : "newton_c++" & "function.py"
+ORDNER : "newton_c++"
 ### [BESCHRIEBUNG-newton (rewisited)]	
 Ich werde das selbe wie Valentino machen, nu rin C++. Es wird sich um ein Programm [.exe] handeln, die in python aufgerufen werden kann, zb:
 ```
