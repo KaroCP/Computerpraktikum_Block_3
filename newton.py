@@ -43,7 +43,6 @@ def newton_approx(f, f_diff, start_point, zeroset, max_iterations = 200, border 
         x = x - np.matmul(jacobi, f(x[0],x[1]))
         for k,ns in enumerate(zeroset):
             if np.linalg.norm(x-ns) < border:
-                # print(x,iterations) #TOOD
                 return k, iterations
         iterations += 1
     return len(zeroset), iterations
