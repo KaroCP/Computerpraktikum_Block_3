@@ -26,13 +26,11 @@ Die AUFGABENSTELLUNG und ANWEISUNGEN Folder beinhaltet die Aufgabenstellung und 
 # Aufteilung
 Hier wird klargestellt wer was tut. Schreibt hier bitte immer rein, was ihr tut und am besten wie jeder euer Programmteile mit den anderen zu komunizieren hat. (Z.B. wenn's ein py-modul werden soll, das einfach erwähnen und wie es heißt...). Alle Dateinamen an denen ihr arbeitet, sollten in einer der folgenden Sektionen erwähnt werden.
 
-## Allgemeiner Programmteil:
-main: Erstellt ein Fractal und gibt den Nutzer Informationen, wie mit dem Plot interagiert werden kann.
-
 ## Valentino
 newton: Die Funktion newton_approx wird von color_newton in functions aufgerufen.
 
 ## Karo
+main: Erstellt ein Fractal und gibt den Nutzer Informationen, wie mit dem Plot interagiert werden kann.<br>
 (plot_stuff: Ruft newton_approximation - das Newtonverfahren in newton - auf.) nicht mehr mit wirklichem Nutzen<br>
 functions: Definiert die Klasse Fractal, die Daten wie die genutze Funktion oder das Iterationslevel speichert, den Plot erstellt und die Möglichkeit der Interaktion mit dem Plot definiert.<br>
 Die Funktion (genauso wie ihre Ableitung) werden als Lambdafunkktionen in einer komplexen Zahl eingegeben (z.B. f = lambda z:z**3-1).<br>
