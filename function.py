@@ -96,9 +96,8 @@ class Fractal:
     """
     # TODO inplement symbolic calculation of derivative and roots.
     
-    def __init__(self,func,f_diff=None,zeroset=None,
-                 label=None,dens=50,max_iter=20,tol=10e-7, 
-                 fast=True,pointer=None):
+    def __init__(self,func,f_diff=None,zeroset=None,label=None,
+                 dens=50,max_iter=20,tol=10e-7, fast=True,pointer=None):
         """
         Parameters
         ----------
@@ -137,7 +136,7 @@ class Fractal:
                                        np.real(f_diff(a+b*1J)*1J)],
                                       [np.imag(f_diff(a+b*1J)), 
                                        np.imag(f_diff(a+b*1J)*1J)]]
-        if zeroset == None: self.roots = self.calculate_zeroset()
+        if np.any(zeroset == None): self.roots = self.calculate_zeroset()
         else: self.roots = np.append(zeroset,[[np.Inf,np.Inf]], axis=0)
         self.label = label
         

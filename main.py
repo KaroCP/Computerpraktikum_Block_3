@@ -1,22 +1,26 @@
 '''
-    The MAIN function of the Project. Here the user starts the plot.'''
+    The MAIN function of the Project. Here the user starts the plot.
+'''
 #!/usr/bin/env python
 # coding: utf-8
 
 # In[1]
 
 from function import Fractal
-from data_collection import choose_fractal
+from data_collection import choose_fractal,chose_fractal_x_times_n
 
 
 # In[2]
 
 print("Welcome to our project")
 # Funfact: the "f = " part ist necessary for the interaction.
-f = Fractal(*choose_fractal())    
+f = Fractal(*chose_fractal_x_times_n())
+# f = Fractal(*choose_fractal())    
+
 print("""
-========================================
+Ready. 
 You can interact with the plot.
+==================================================
 Press 'o' to zoome (a fix property) out.
 Press 'r' to reset the zoom.
 You have two zoom options:

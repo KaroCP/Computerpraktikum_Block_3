@@ -10,7 +10,52 @@ Now a collection for data. #TODO Shift this into csv data?
 import numpy as np
 
 
-# In[2] 
+# In[2]
+
+def get_natural(string):
+    print(string)
+    while True:
+        number = input(" > ")
+        try: 
+            number = int(number)
+            if number >= 1: 
+                break
+        except: pass
+    return number
+
+
+# In[3]
+
+def chose_fractal_x_times_n():
+    print("""
+You can assemble the plot information by yourself.
+To simplify we consider functions like x^n-1.
+They usually induce a fractal structure""")
+    n = get_natural("""==================================================
+First chose the power n.""")
+    dens = get_natural("""
+==================================================
+Now say the density of the pixel.""")
+    max_iter = get_natural("""
+==================================================
+Last enter the maximum number of iterations.""")
+    print("""
+Please wait now. Your fractal will be assembled.""")
+    f = lambda z:z**n-1
+    diff = lambda z:n*z**(n-1)
+    zeta = np.exp(2*np.pi*1J/n) # primitive n-th unit root.
+    # roots = np.fromfunction(lambda k:[np.real(np.power(zeta,k)),
+    #                                   np.imag(np.power(zeta,k))],(n,))
+    # roots = np.array(roots).T
+    roots = np.array([[np.real(np.power(zeta,k)),
+                      np.imag(np.power(zeta,k))] for k in range(n)])
+    label = "x^{}-1".format(n)
+    return f,diff,roots,label,dens,max_iter
+    
+ 
+
+
+# In[5] 
 # create some exampels
 
 f1_func = lambda z:z**2-1  # lambda a,b:[a**2-b**2-1,2*a*b]
@@ -41,7 +86,7 @@ data_set = [[f1_func, f1_diff, f1_0, "x**2-1", 10,10],
             [f4_func, f4_diff, f4_0, "x**5-1", 60,30],
             [f4_func, f4_diff, f4_0, "x**5-1", 200,50]]
 
-# In[3]
+# In[6]
 
 def choose_fractal():
     print("""
