@@ -243,16 +243,18 @@ class Fractal:
         """
         Calculates and plots the fractal structure on the grid.
         """
-        h = np.vectorize(colorsys.hsv_to_rgb)
+        # h = np.vectorize(colorsys.hsv_to_rgb)
+        h = np.vectorize(colorsys.hls_to_rgb)
         newton = np.vectorize(lambda px, py: newton_approx(self.func,self.diff,
                     [px,py],self.roots[:-1],self.max_iteration,self.tolerance))
         
         root_hue, iter_light = np.array(newton(*grid))
-        iter_light = np.array((1/2*iter_light/self.max_iteration+3/8))
+        # iter_light = np.array((1/2*iter_light/self.max_iteration+3/8))
+        iter_light = np.array((7/8*iter_light/self.max_iteration+1/8))
         root_hue = self.colors[root_hue.astype(int)]
 
-        plot = np.array(h(root_hue,1,iter_light)).transpose(1,2,0)
-        plot[root_hue==1]=1
+        plot = np.array(h(root_hue,iter_light,1)).transpose(1,2,0)
+        # plot[root_hue==1]=1 #TODO
         return plot
         
     
