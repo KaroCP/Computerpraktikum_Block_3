@@ -30,11 +30,15 @@ Hier wird klargestellt wer was tut. Schreibt hier bitte immer rein, was ihr tut 
 newton: Die Funktion newton_approx wird von color_newton in functions aufgerufen.
 
 ## Karo
-main: Erstellt ein Fractal und gibt den Nutzer Informationen, wie mit dem Plot interagiert werden kann.<br>
-(plot_stuff: Ruft newton_approximation - das Newtonverfahren in newton - auf.) nicht mehr mit wirklichem Nutzen<br>
-functions: Definiert die Klasse Fractal, die Daten wie die genutze Funktion oder das Iterationslevel speichert, den Plot erstellt und die Möglichkeit der Interaktion mit dem Plot definiert.<br>
+Hier kurze Beschreibung der Module. Für genauere Informationen siehe Python Documentation.
+### main
+Erstellt mithilfe von data_collection importierten Funktionen ein Fractal und gibt den Nutzer Informationen, wie mit dem Plot interagiert werden kann.
+### functions
+Definiert die Klasse Fractal, die Daten wie die genutze Funktion oder das Iterationslevel speichert, den Plot erstellt und die Möglichkeit der Interaktion mit dem Plot definiert.<br>
 Die Funktion (genauso wie ihre Ableitung) werden als Lambdafunkktionen in einer komplexen Zahl eingegeben (z.B. f = lambda z:z**3-1).<br>
 Die Klasse ruft zur Berechnung des Plots - je nach Einstellung - die Funktion newton_approx in newton oder ??? in ?newton_C++? auf.
+### data_collection
+Sammelt und erstellt mogliche Daten für Fraktale. Und Funktionen durch die der Nutzer mithilfe der Konsole einen Datensatz auswählen kann.
 
 ## Momo
 ### Programmteil/e : newton (revisited).
