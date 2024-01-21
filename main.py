@@ -17,15 +17,14 @@ f = Fractal(*choose_fractal())
 print("""
 ========================================
 You can interact with the plot.
-Press at some point the left mouse button, draw the rectangle and 
-    release the mousebutton at the desired location to zoom in. 
-    The drawn recktangle will be the new shown part.
 Press 'o' to zoome (a fix property) out.
 Press 'r' to reset the zoom.
-Press 'z' to switch to [zoom with the mouse wheel and moving the plot 
-                        with drag and drop - use only if the 
-                        calculation is fast!] and back""")
-
+You have two zoom options:
+    First you can zoom by drawing a rectangle.
+    Second you can zoom with the mouse wheel 
+        and move the plot with drag and drop.
+        Use this option only when the canlulation is fast!
+    You can switch the zoom options with 'z'.""")
 
 
 # In[3] 

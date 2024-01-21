@@ -38,7 +38,8 @@ data_set = [[f1_func, f1_diff, f1_0, "x**2-1", 10,10],
             [f2_func, f2_diff, f2_0, "x**2+1", 20,10],
             [f3_func, f3_diff, f3_0, "x**3-1", 20,10],
             [f3_func, f3_diff, f3_0, "x**3-1", 50,20],
-            [f4_func, f4_diff, f4_0, "x**5-1", 50,60]]
+            [f4_func, f4_diff, f4_0, "x**5-1", 60,30],
+            [f4_func, f4_diff, f4_0, "x**5-1", 200,50]]
 
 # In[3]
 
@@ -46,12 +47,12 @@ def choose_fractal():
     print("""
 ========================================
 First chose the function, which will be used to create the fractal.
-Input a number between 1 and 5 to choose.""")
+Input a number between 1 and 6 to choose.""")
     while True:
         string = input(" > ")
         try: 
             string = int(string)
-            if string in [1,2,3,4,5]: 
+            if string in [1,2,3,4,5,6]: 
                 break
         except: pass
     return data_set[string-1]

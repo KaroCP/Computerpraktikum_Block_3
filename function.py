@@ -14,6 +14,8 @@ import matplotlib.pyplot as plt
 
 from matplotlib.patches import Rectangle
 import colorsys
+import subprocess
+import time
 
 # from sympy.utilities.lambdify import implemented_function
 # from sympy.abc import x
@@ -28,17 +30,82 @@ from newton import newton_approx
 # In[2]
 
 class Fractal:
-    # TODO insert documentary
-    # TODO inplement symbolic calculation of derivative and roots.
-    # TODO implementieren automatic zoom.
+    """
+    Class of an interative Interface which plots a fractal.
     
-    def __init__(self,func,f_diff=None,zeroset=None,label=None,dens=50,max_iter=200,tol=10e-7):
+    Attributes
+    ----------
+    fig : matplotlib.figure.Figure
+        Figure form the interface.
+    func : function in two variables
+        The function which generates the fractal. 
+    diff : function in two variables
+        At each point the Jacobian of func. 
+    roots : np.ndarray
+        Array of the roots of func written as 2-dimensional data points.
+        With [Inf,Inf] as additional entry for divergence.
+    colors : np.ndarray
+        Array colors. for each root one color.
+    label : str
+        Name or maping rule of func.
+    density : int
+        number of pixel in each row and colum.
+    max_iterations : int
+        The number if the maximal iterations in the newton approximation.
+        The default is 200.
+    tolerance : float
+        The tolerance in the newton approximation. The default is 0.01.
+    fast : bool, optional
+        Says which calculation will be used. 
+        The faster calculation with C++ or the slower one in python.
+        The default is True.
+    lims : array of form [[x_min, y_min],[x_max, y_max]]
+        Contains the information, in which area in the compley plane 
+        the function is plotted.
+    plot : array with shape (density,density,3)
+        Contains the color data at each point so it has not to be 
+        recalculated each time
+
+    Methods
+    -------
+    calculate_diff()
+        Calculates the derivative of func symbolc
+    calculate_zeroset()
+        Calculates the derivative of func symbolc
+    update()
+        Method to update the plot with limits.
+    color_newton(grid)
+        Calculates at each point the resulting color 
+        by using the newton approximation.
+    switch_zoom(event)
+        Individual functions with respective queries for specific inputs for 
+        interaction with the keyboard.        
+    zoom1(event)
+        First and standard zoom option. Zoom by drawing a rectangle.
+    zoom2(event)
+        Second method for zooming. 
+        Zoom with dhe mouse wheel in and out of the plot.
+    translation(event)
+        Method for drag and drop. 
+        Only possible when using the second zoom option and fast calculation.
+    isVisible()
+        Tests wether the figure is stil open (-> True) 
+        or was closed (-> False).
+    kino()
+        Placeholder for animated zoom. #TODO
+    """
+    # TODO inplement symbolic calculation of derivative and roots.
+    
+    def __init__(self,func,f_diff=None,zeroset=None,
+                 label=None,dens=50,max_iter=20,tol=10e-7, 
+                 fast=True,pointer=None):
         """
         Parameters
         ----------
         func : function
             Function from C to C which will be used to create the fractal.
-            Not anymore: 1D array with shape (2,2). In fact: func= [f1(x1,x2), f2(x1,x2)].
+            Not anymore: 1D array with shape (2,2). 
+            In fact: func= [f1(x1,x2), f2(x1,x2)].
         f_diff : 2D array with shape (2,2), optional
             With functions as entries. The default is None.
             [df1/dx1 df1/dx1
@@ -54,13 +121,22 @@ class Fractal:
             The default is 200.
         tol : float
             The tolerance in the newton approximation. The default is 0.01.
+        fast : bool, optional
+            Says which calculation will be used. 
+            The faster calculation with C++ or the slower one in python.
+            The default is True.
+        pointer : arry of form [x,y].
+            For the animated zoom. at which direction the zoom will be.
+            Still a bit #TODO!
         """
         
         # Consatants:
         self.func = lambda a,b:[np.real(func(a+b*1J)), np.imag(func(a+b*1J))]
         if f_diff == None: self.diff = self.calculate_diff()
-        else: self.diff = lambda a,b:[[np.real(f_diff(a+b*1J)), np.real(f_diff(a+b*1J)*1J)],
-                                      [np.imag(f_diff(a+b*1J)), np.imag(f_diff(a+b*1J)*1J)]]
+        else: self.diff = lambda a,b:[[np.real(f_diff(a+b*1J)), 
+                                       np.real(f_diff(a+b*1J)*1J)],
+                                      [np.imag(f_diff(a+b*1J)), 
+                                       np.imag(f_diff(a+b*1J)*1J)]]
         if zeroset == None: self.roots = self.calculate_zeroset()
         else: self.roots = np.append(zeroset,[[np.Inf,np.Inf]], axis=0)
         self.label = label
@@ -68,21 +144,27 @@ class Fractal:
         self.max_iteration = max_iter
         self.tolerance = tol
         self.density = dens
+        self.fast = False#fast
         
         self.colors = np.linspace(0,1,len(self.roots))
         self.fig = plt.figure() # This creates canvas
         self.fig.subplots(1)
         
+        if pointer != None: 
+            self.pointer = pointer
+            self.start_time = time.perf_counter()
+        
         
         # Variables:
-        self.lims = np.array([[-1,1],[-1,1]]) # has form [[x_min, x_max],[y_min, y_max]]
+        self.lims = np.array([[-1,-1],[1,1]])
         self.plot = np.zeros((self.density,self.density,3))
         
         self.zoom = True        
         self.fig.canvas.mpl_connect('key_press_event', self.switch_zoom)
         self.bindingidtranslation = None
         self.bindingidbuttonrelease = None
-        self.bindingidzoom = self.fig.canvas.mpl_connect('button_press_event', self.zoom1)
+        self.bindingidzoom = self.fig.canvas.mpl_connect('button_press_event', 
+                                                         self.zoom1)
         self.rectangle = None
         self.recalculate = True
         
@@ -99,12 +181,18 @@ class Fractal:
         f_diff : function
             At each point (a,b) it is the Jacobi matrix of self.func
         """
+        # x = sympy.symbols('x')
+        # func = lambda x:func(x)
+        # try: diff = sympy.lambdify(x,func(x).diff(x))
+        
         # f_here = implemented_function('g', lambda x:f(x))
         # f_diff = diff(f_here(x),x)
         # f_diff = lambdify(x, f_diff(x))
-        # return lambda x:x+1
         raise NotImplementedError("The symbolic calculation of the derivative",
                                   "has not yet been implemented.")
+        # except Exception as e: 
+        #     raise Exception(e,
+        #         "The derivation could not be calculated symbolically.")
         
     
     def calculate_zeroset(self):
@@ -134,11 +222,15 @@ class Fractal:
         
         # renew plots
         if self.recalculate: 
-            grid = np.array(np.meshgrid(np.linspace(*self.lims[0],self.density),
-                            np.linspace(*self.lims[1],self.density)))
-            self.color_newton(grid)
+            grid = np.meshgrid(np.linspace(*self.lims[:,0],self.density),
+                               np.linspace(*self.lims[:,1],self.density))
+            if self.fast: #TODO
+                self.plot = subprocess.run(["/newton_c++.exe", "KARO's INPUT"]) 
+            else: self.plot = self.color_newton(grid)
             self.recalculate = False
-        else: ax.imshow(self.plot)
+        # set origin to habe not inverst y-axis.
+        # Give extend to have realistic subscription at the axis.
+        ax.imshow(self.plot, origin="lower", extent = self.lims.T.flatten())
         if self.rectangle != None: ax.add_patch(self.rectangle)
         
         # draw
@@ -160,9 +252,9 @@ class Fractal:
         iter_light = np.array((1/2*iter_light/self.max_iteration+3/8))
         root_hue = self.colors[root_hue.astype(int)]
 
-        self.plot = np.array(h(root_hue,1,iter_light)).transpose(1,2,0)
-        self.plot[root_hue==1]=1
-        return plt.imshow(self.plot)
+        plot = np.array(h(root_hue,1,iter_light)).transpose(1,2,0)
+        plot[root_hue==1]=1
+        return plot
         
     
 # In[6]
@@ -174,17 +266,21 @@ class Fractal:
                 plt.disconnect(self.bindingidtranslation)
                 plt.disconnect(self.bindingidzoom)
                 self.bindingidtranslation = None
-                self.bindingidzoom = self.fig.canvas.mpl_connect('button_press_event', self.zoom1)
+                self.bindingidzoom = self.fig.canvas.mpl_connect(
+                                  'button_press_event', self.zoom1)
             else:
                 plt.disconnect(self.bindingidzoom)
-                self.bindingidzoom = self.fig.canvas.mpl_connect('scroll_event', self.zoom2)
-                self.bindingidtranslation = self.fig.canvas.mpl_connect('button_press_event', self.translation)
+                self.bindingidzoom = self.fig.canvas.mpl_connect(
+                                        'scroll_event', self.zoom2)
+                self.bindingidtranslation = self.fig.canvas.mpl_connect(
+                                   'button_press_event', self.translation)
         if event.key == "r": #reset
-            self.lims = np.array([[-1,1],[-1,1]])
+            self.lims = np.array([[-1,-1],[1,1]])
             self.recalculate = True
             self.update()
         if event.key == "o": #Zoom out
-            self.lims = 10*self.lims
+            center = np.sum(self.lims,axis=0)/2
+            self.lims = 10*(self.lims-center)+center
             self.recalculate = True
             self.update()
         
@@ -206,9 +302,11 @@ class Fractal:
             """
             value2 = np.array([event_2.xdata, event_2.ydata])
             if np.array(value2 != None).all():
-                self.rectangle = Rectangle(value1, *(value2-value1),color=(0.5,0.5,0.5,0.7))
+                self.rectangle = Rectangle(value1,*(value2-value1),
+                                           color=(0.5,0.5,0.5,0.7))
                 self.update()
-        moving_id = self.fig.canvas.mpl_connect('motion_notify_event', motion_notify)
+        moving_id = self.fig.canvas.mpl_connect(
+             'motion_notify_event', motion_notify)
             
         def button_release(event_3):
             plt.disconnect(moving_id)
@@ -217,28 +315,71 @@ class Fractal:
             self.rectangle = None
             value2 = np.array([event_3.xdata, event_3.ydata])
             if None not in np.array([value1,value2]) and not (value1-value2==0).any():
-                self.lims = (np.multiply((self.lims[:,1]-self.lims[:,0])/self.density,
-                             np.sort([value1, value2], axis=0))+self.lims[:,0]).T
+                self.lims = np.sort([value1, value2], axis=0)
                 self.recalculate = True
                 self.update() 
             else: self.update()
-        self.bindingidbuttonrelease = self.fig.canvas.mpl_connect('button_release_event', button_release)
+        self.bindingidbuttonrelease = self.fig.canvas.mpl_connect(
+                             'button_release_event', button_release)
         
     
 # In[8]
     
     def zoom2(self,event):
-        # old_lim = self.lims.T-(self.lims[:,1]+self.lims[:,0])/2 #TODO
-        # self.lims = (old_lim*(1-0.05*event.step)+[event.xdata,event.ydata]).T        
-        self.lims = self.lims*(1-0.05*event.step)
+        # position = np.sum(self.lims,axis=0)/2
+        position = np.array([event.xdata,event.ydata])
+        self.lims = (1-0.05*event.step)*(self.lims-position)+position
         self.recalculate = True
         self.update()
         
     
     def translation(self,event):
-        pass #TODO implement "drag_and_drop" from plotstuff
+        value1 = np.array([event.xdata, event.ydata])
+        
+        def motion_notify(event_2):
+            """
+            Function for zoom to animate the position of the mouse 
+            pointer and the resulting image.
+    
+            Parameters
+            ----------
+            event_2 : matplotlib.backend_bases.MouseEvent
+                Object which contains the information of the coordinates of 
+                the mouse pointer.
+            """
+            value2 = np.array([event_2.xdata, event_2.ydata])
+            if np.array(value2 != None).all():
+                self.lims = self.lims + value1-value2
+                self.recalculate = True
+                self.update()
+        
+        moving_id = self.fig.canvas.mpl_connect(
+             'motion_notify_event', motion_notify)
+        
+        def button_release(event_3):
+            plt.disconnect(moving_id)
+            plt.disconnect(self.bindingidbuttonrelease)
+            self.bindingidbuttonrelease = None
+        self.bindingidbuttonrelease = self.fig.canvas.mpl_connect(
+                             'button_release_event', button_release)
         
     
 # In[9]
     
+    def isVisible(self): #for animation. still TODO
+        """
+        Tests wether the figure is stil open (-> True) 
+        or was closed (-> False).
+
+        Returns
+        -------
+        still_open : bool
+            True, if the figure is still active, False if the figure 
+            was closed.
+        """
+        still_open = self.fig.canvas.isVisible()
+        return still_open
+
+    def kino(self):
+        pass
     

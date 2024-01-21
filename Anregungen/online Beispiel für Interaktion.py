@@ -74,3 +74,42 @@ plt.show()
 
 # In[2]
 
+import numpy as np
+import matplotlib.pyplot as plt
+import colorsys
+# import time
+from matplotlib.widgets import Slider
+
+# start_time = time.perf_counter()
+A = np.array([[1,2],[2,4]])
+a  =np.array([0,1])
+b = np.array([1,2])
+# c = (A.T/b).T
+# c = a*b
+# c = (A.T+b).T
+# print(c)
+# print(time.perf_counter()-start_time)
+plt.plot(*A, c=colorsys.hsv_to_rgb(0,1,0.5))
+
+
+fig, ax = plt.subplots()
+line, = ax.plot(a, a, lw=5, c=colorsys.hsv_to_rgb(0,1,0.5))
+fig.subplots_adjust(left=0.25, bottom=0.25) # make room for sliders
+ax_slider = fig.add_axes([0.1, 0.25, 0.0225, 0.63])
+amp_slider = Slider(
+    ax=ax_slider,
+    label="Color",
+    valmin=0,
+    valmax=1,
+    valinit=0,
+    orientation="vertical"
+)
+def update(val):
+    line.set_color(colorsys.hsv_to_rgb(amp_slider.val,1,0.75))
+    fig.canvas.draw_idle()
+    
+amp_slider.on_changed(update)
+
+
+# In[3]
+
