@@ -62,7 +62,7 @@ class Fractal:
     lims : array of form [[x_min, y_min],[x_max, y_max]]
         Contains the information, in which area in the compley plane 
         the function is plotted.
-    plot : array with shape (density,density,3)
+    plot_data : array with shape (density,density,3)
         Contains the color data at each point so it has not to be 
         recalculated each time
 
@@ -131,13 +131,13 @@ class Fractal:
         
         # Consatants:
         self.func = lambda a,b:[np.real(func(a+b*1J)), np.imag(func(a+b*1J))]
-        if f_diff == None: self.diff = self.calculate_diff()
-        else: self.diff = lambda a,b:[[np.real(f_diff(a+b*1J)), 
-                                       np.real(f_diff(a+b*1J)*1J)],
-                                      [np.imag(f_diff(a+b*1J)), 
-                                       np.imag(f_diff(a+b*1J)*1J)]]
-        if np.any(zeroset == None): self.roots = self.calculate_zeroset()
-        else: self.roots = np.append(zeroset,[[np.Inf,np.Inf]], axis=0)
+        if f_diff == None: f_diff = self.calculate_diff()
+        self.diff = lambda a,b:[[np.real(f_diff(a+b*1J)), 
+                                 np.real(f_diff(a+b*1J)*1J)],
+                                [np.imag(f_diff(a+b*1J)), 
+                                 np.imag(f_diff(a+b*1J)*1J)]]
+        if np.any(zeroset == None): zeroset = self.calculate_zeroset()
+        self.roots = np.append(zeroset,[[np.Inf,np.Inf]], axis=0)
         self.label = label
         
         self.max_iteration = max_iter
@@ -156,7 +156,7 @@ class Fractal:
         
         # Variables:
         self.lims = np.array([[-1,-1],[1,1]])
-        self.plot = np.zeros((self.density,self.density,3))
+        self.plot_data = np.zeros((self.density,self.density,3))
         
         self.zoom = True        
         self.fig.canvas.mpl_connect('key_press_event', self.switch_zoom)
@@ -224,12 +224,12 @@ class Fractal:
             grid = np.meshgrid(np.linspace(*self.lims[:,0],self.density),
                                np.linspace(*self.lims[:,1],self.density))
             if self.fast: #TODO
-                self.plot = subprocess.run(["/newton_c++.exe", "KARO's INPUT"]) 
-            else: self.plot = self.color_newton(grid)
+                self.plot_data = subprocess.run(["/newton_c++.exe", "KARO's INPUT"]) 
+            else: self.plot_data = self.color_newton(grid)
             self.recalculate = False
         # set origin to habe not inverst y-axis.
         # Give extend to have realistic subscription at the axis.
-        ax.imshow(self.plot, origin="lower", extent = self.lims.T.flatten())
+        ax.imshow(self.plot_data, origin="lower", extent = self.lims.T.flatten())
         if self.rectangle != None: ax.add_patch(self.rectangle)
         
         # draw
@@ -310,6 +310,7 @@ class Fractal:
             plt.disconnect(self.bindingidbuttonrelease)
             self.bindingidbuttonrelease = None
             self.rectangle = None
+            
             value2 = np.array([event_3.xdata, event_3.ydata])
             if None not in np.array([value1,value2]) and not (value1-value2==0).any():
                 self.lims = np.sort([value1, value2], axis=0)
