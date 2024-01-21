@@ -38,7 +38,7 @@ Definiert die Klasse Fractal, die Daten wie die genutze Funktion oder das Iterat
 Die Funktion (genauso wie ihre Ableitung) werden als Lambdafunkktionen in einer komplexen Zahl eingegeben (z.B. f = lambda z:z**3-1).<br>
 Die Klasse ruft zur Berechnung des Plots - je nach Einstellung - die Funktion newton_approx in newton oder ??? in ?newton_C++? auf.
 ### data_collection
-Sammelt und erstellt mogliche Daten für Fraktale. Und Funktionen durch die der Nutzer mithilfe der Konsole einen Datensatz auswählen kann.
+Sammelt und erstellt mögliche Daten für Fraktale. Und definiert Funktionen, durch die der Nutzer - mithilfe der Konsole - einen Datensatz auswählen kann.
 
 ## Momo
 ### Programmteil/e : newton (revisited).
