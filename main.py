@@ -15,7 +15,6 @@ from data_collection import choose_fractal,chose_fractal_x_times_n
 print("Welcome to our project")
 # Funfact: the "f = " part ist necessary for the interaction.
 f = Fractal(*chose_fractal_x_times_n())
-# f = Fractal(*choose_fractal())    
 
 print("""
 Ready. 

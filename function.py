@@ -277,7 +277,7 @@ class Fractal:
             self.update()
         if event.key == "o": #Zoom out
             center = np.sum(self.lims,axis=0)/2
-            self.lims = 10*(self.lims-center)+center
+            self.lims = 2*(self.lims-center)+center
             self.recalculate = True
             self.update()
         
@@ -324,8 +324,8 @@ class Fractal:
 # In[8]
     
     def zoom2(self,event):
-        # position = np.sum(self.lims,axis=0)/2
         position = np.array([event.xdata,event.ydata])
+        if np.any(position==None): position = np.sum(self.lims,axis=0)/2
         self.lims = (1-0.05*event.step)*(self.lims-position)+position
         self.recalculate = True
         self.update()
