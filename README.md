@@ -9,12 +9,11 @@ Die AUFGABENSTELLUNG und ANWEISUNGEN Folder beinhaltet die Aufgabenstellung und 
 - Beispiele suchen 
 - Laufzeit verbessern, Insbesondere Zeiten vergleichen, Konvergenzordnung vergleichen (Momo)
 - Interaktion implementieren (Karo)
-- Ableitung und Nullstellenmenge symbolisch berechnen
+- Ableitung symbolisch berechnen
 - Andere Berechnungsverfahren implementieren (Valentino)
 - Parameterabhängige Funktionen als Beispiele machen
-
+<br>
 - Adaptive Max_Iteration (großes Max Iterarion und durch np.max teilen)
-- Zoom um eins zurücksetzen und auf "b" (wie sinnvoll machen, auch mehr als einmal zurücksetzen möglich ?)
 - Beispiele (Kreisteilungspolynome gebrochen rationale Funktionen, trigonometrisch)
 - Dynamisches Berechnen (für rauszoomen) d.h. nutzt die schon berechneten pixel 
 
