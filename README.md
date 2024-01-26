@@ -13,6 +13,7 @@ Die AUFGABENSTELLUNG und ANWEISUNGEN Folder beinhaltet die Aufgabenstellung und 
 - Andere Berechnungsverfahren implementieren (Valentino)
 - Parameterabhängige Funktionen als Beispiele machen
 <br>
+
 - Adaptive Max_Iteration (großes Max Iterarion und durch np.max teilen)
 - Beispiele (Kreisteilungspolynome gebrochen rationale Funktionen, trigonometrisch)
 - Dynamisches Berechnen (für rauszoomen) d.h. nutzt die schon berechneten pixel 
