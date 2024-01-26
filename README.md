@@ -13,6 +13,11 @@ Die AUFGABENSTELLUNG und ANWEISUNGEN Folder beinhaltet die Aufgabenstellung und 
 - Andere Berechnungsverfahren implementieren (Valentino)
 - Parameterabhängige Funktionen als Beispiele machen
 
+- Adaptive Max_Iteration (großes Max Iterarion und durch np.max teilen)
+- Zoom um eins zurücksetzen und auf "b" (wie sinnvoll machen, auch mehr als einmal zurücksetzen möglich ?)
+- Beispiele (Kreisteilungspolynome gebrochen rationale Funktionen, trigonometrisch)
+- Dynamisches Berechnen (für rauszoomen) d.h. nutzt die schon berechneten pixel 
+
 # Aufteilung
 Hier wird klargestellt wer was tut. Schreibt hier bitte immer rein, was ihr tut und am besten wie jeder euer Programmteile mit den anderen zu komunizieren hat. (Z.B. wenn's ein py-modul werden soll, das einfach erwähnen und wie es heißt...). Alle Dateinamen an denen ihr arbeitet, sollten in einer der folgenden Sektionen erwähnt werden.
 
