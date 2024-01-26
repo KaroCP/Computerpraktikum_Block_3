@@ -7,7 +7,7 @@
 # In[1]
 
 from function import Fractal
-from data_collection import choose_fractal,chose_fractal_x_times_n
+from data_collection import chose_fractal_x_times_n
 
 
 # In[2]

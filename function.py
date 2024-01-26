@@ -24,7 +24,9 @@ import time
 # from sympy import roots
 # from sympy import solve
 
-from newton import newton_approx
+old = False
+if old: from newton_works import newton_approx #TODO
+else:   from newton_von_Valentino import newton_approx
 
 
 # In[2]
@@ -94,7 +96,7 @@ class Fractal:
     kino()
         Placeholder for animated zoom. #TODO
     """
-    # TODO inplement symbolic calculation of derivative and roots.
+    # TODO inplement symbolic calculation of derivative.
     
     def __init__(self,func,f_diff=None,zeroset=None,label=None,
                  dens=50,max_iter=20,tol=10e-7, fast=True,pointer=None):
@@ -136,16 +138,16 @@ class Fractal:
                                  np.real(f_diff(a+b*1J)*1J)],
                                 [np.imag(f_diff(a+b*1J)), 
                                  np.imag(f_diff(a+b*1J)*1J)]]
-        if np.any(zeroset == None): zeroset = self.calculate_zeroset()
-        self.roots = np.append(zeroset,[[np.Inf,np.Inf]], axis=0)
+        if np.any(zeroset == None): zeroset = None
         self.label = label
+        if old: self.set_roots(np.append(zeroset,[[np.Inf,np.Inf]], axis=0))
+        else: self.set_roots(None)
         
         self.max_iteration = max_iter
         self.tolerance = tol
         self.density = dens
         self.fast = False#fast
         
-        self.colors = np.linspace(0,1,len(self.roots))
         self.fig = plt.figure() # This creates canvas
         self.fig.subplots(1)
         
@@ -155,7 +157,7 @@ class Fractal:
         
         
         # Variables:
-        self.lims = np.array([[-1,-1],[1,1]])
+        self.lims = np.array([[[-1,-1],[1,1]]])
         self.plot_data = np.zeros((self.density,self.density,3))
         
         self.zoom = True        
@@ -192,21 +194,12 @@ class Fractal:
         # except Exception as e: 
         #     raise Exception(e,
         #         "The derivation could not be calculated symbolically.")
-        
     
-    def calculate_zeroset(self):
-        """
-        Returns
-        -------
-        zeroset : np.ndarray with shape (n,2)
-            The set roots of self.func. There are n roots of self.func.
-        """
-        # g = implemented_function('g', lambda x:f(x))
-        # zeroset = solve(g(x)==0,x)
-        # zeroset = roots(g(x),x)
-        # return zeroset + [np.Inf]
-        raise NotImplementedError("The symbolic calculation of the roots",
-                                  "has not yet been implemented.")
+    
+    def set_roots(self,roots):
+        if np.any(roots==None): return #self.roots, and self.color ade not defined #TODO
+        self.roots = roots
+        self.colors = np.linspace(0,1,len(self.roots))
         
     
 # In[4]
@@ -221,15 +214,15 @@ class Fractal:
         
         # renew plots
         if self.recalculate: 
-            grid = np.meshgrid(np.linspace(*self.lims[:,0],self.density),
-                               np.linspace(*self.lims[:,1],self.density))
+            grid = np.meshgrid(np.linspace(*self.lims[-1,:,0],self.density),
+                               np.linspace(*self.lims[-1,:,1],self.density))
             if self.fast: #TODO
                 self.plot_data = subprocess.run(["/newton_c++.exe", "KARO's INPUT"]) 
             else: self.plot_data = self.color_newton(grid)
             self.recalculate = False
         # set origin to habe not inverst y-axis.
         # Give extend to have realistic subscription at the axis.
-        ax.imshow(self.plot_data, origin="lower", extent = self.lims.T.flatten())
+        ax.imshow(self.plot_data, origin="lower", extent = self.lims[-1].T.flatten())
         if self.rectangle != None: ax.add_patch(self.rectangle)
         
         # draw
@@ -244,10 +237,14 @@ class Fractal:
         Calculates and plots the fractal structure on the grid.
         """
         h = np.vectorize(colorsys.hls_to_rgb)
-        newton = np.vectorize(lambda px, py: newton_approx(self.func,self.diff,
-                    [px,py],self.roots[:-1],self.max_iteration,self.tolerance))
-        
-        root_hue, iter_light = np.array(newton(*grid))
+        if old:
+            newton = np.vectorize(lambda px, py: newton_approx(self.func,self.diff,
+                        [px,py],self.roots[:-1],self.max_iteration,self.tolerance))
+            root_hue, iter_light = newton(*grid)
+        else: 
+            value = newton_approx(self.func,self.diff,grid,self.max_iteration,self.tolerance)
+            self.set_roots(value[1])
+            root_hue, iter_light = value[0].transpose(2,0,1)
         iter_light = np.array((7/8*iter_light/self.max_iteration+1/8))
         root_hue = self.colors[root_hue.astype(int)]
 
@@ -271,15 +268,22 @@ class Fractal:
                                         'scroll_event', self.zoom2)
                 self.bindingidtranslation = self.fig.canvas.mpl_connect(
                                    'button_press_event', self.translation)
-        if event.key == "r": #reset
-            self.lims = np.array([[-1,-1],[1,1]])
+        elif event.key == "r": #reset
+            self.lims = np.array([[[-1,-1],[1,1]]])
             self.recalculate = True
             self.update()
-        if event.key == "o": #Zoom out
-            center = np.sum(self.lims,axis=0)/2
-            self.lims = 2*(self.lims-center)+center
+        elif event.key == "o": #Zoom out
+            center = np.sum(self.lims[-1],axis=0)/2
+            self.lims = np.append(self.lims,[2*(self.lims[-1]-center)+center],axis=0)
             self.recalculate = True
             self.update()
+        elif event.key == "b":
+            if len(self.lims)==1:
+                print("No zoom state before initial state.")
+            else:
+                self.lims = np.delete(self.lims,-1,axis=0)
+                self.recalculate = True
+                self.update()
         
     
 # In[7]
@@ -313,7 +317,7 @@ class Fractal:
             
             value2 = np.array([event_3.xdata, event_3.ydata])
             if None not in np.array([value1,value2]) and not (value1-value2==0).any():
-                self.lims = np.sort([value1, value2], axis=0)
+                self.lims = np.append(self.lims,[np.sort([value1, value2], axis=0)],axis=0)
                 self.recalculate = True
                 self.update() 
             else: self.update()
@@ -325,14 +329,16 @@ class Fractal:
     
     def zoom2(self,event):
         position = np.array([event.xdata,event.ydata])
-        if np.any(position==None): position = np.sum(self.lims,axis=0)/2
-        self.lims = (1-0.05*event.step)*(self.lims-position)+position
+        if np.any(position==None): position = np.sum(self.lims[-1],axis=0)/2
+        self.lims = np.append(self.lims,
+                [(1-0.05*event.step)*(self.lims[-1]-position)+position], axis=0)
         self.recalculate = True
         self.update()
         
     
     def translation(self,event):
         value1 = np.array([event.xdata, event.ydata])
+        self.lims = np.append(self.lims,[self.lims[-1]],axis=0)
         
         def motion_notify(event_2):
             """
@@ -347,7 +353,7 @@ class Fractal:
             """
             value2 = np.array([event_2.xdata, event_2.ydata])
             if np.array(value2 != None).all():
-                self.lims = self.lims + value1-value2
+                self.lims[-1] = self.lims[-1] + value1-value2
                 self.recalculate = True
                 self.update()
         

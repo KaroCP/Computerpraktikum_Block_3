@@ -1,6 +1,6 @@
 '''
 Reused plot_stuff.
-Now a collection for data. #TODO Shift this into csv data?
+Now a collection for data.
 '''
 #!/usr/bin/env python
 # coding: utf-8

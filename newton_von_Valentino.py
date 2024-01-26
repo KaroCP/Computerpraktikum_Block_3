@@ -42,17 +42,17 @@ def newton_approx(f, f_diff, start_points, max_iterations = 200, border = 10**(-
                 jacobi = np.linalg.inv(jacobi)
                 point_temp = point
                 point = point - np.matmul(jacobi, f(point[0],point[1]))
-                if np.linalg.norm(point, point_temp) < border:
-                    iterations_help[y,x] = 0
+                if np.linalg.norm(point-point_temp) < border:
+                    iterations_help[y,x] = iterations
                     stop_iterations == True
+                iterations += 1
             for i in root_help:
-                if np.linalg.norm(point, sum(i)/len(i)) < border:
+                if np.linalg.norm(point-sum(i)/len(i)) < border:
                     i.append(point)
                 else:
                     root_help.append([point])
-            iterations += 1
             point_help[y,x] = point
-        
+    print(root_help,"root_help")
     for i in root_help:
         if len(i) > 9:
             roots.append(sum(i)/len(i))
@@ -60,11 +60,13 @@ def newton_approx(f, f_diff, start_points, max_iterations = 200, border = 10**(-
     for y in range(y_dim):
         for x in range(x_dim):
             for i in range(len(roots)):
-                if np.linalg.norm(point_help[x,y], roots[i]) < border:
-                    point_help[x,y] = i
+                if np.linalg.norm(point_help[y,x]-roots[i]) < border:
+                    point_help[y,x] = i
                     break
                 else:
-                    point_help[x,y] = len(roots)
+                    point_help[y,x] = [len(roots),iterations_help[y,x]]
+    print(point_help, "point help")
+    print(roots)
     return point_help, roots
 
 
