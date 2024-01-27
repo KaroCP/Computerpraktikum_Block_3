@@ -88,8 +88,8 @@ def sort_roots(roots_grid, n, max_iterations = 100, border = 10**(-3)):
     Returns
     -------
     roots_grid : numpy-Array
-        numpy-Array with each entry being a (2,.) numpy-Array, first entry is the index of the root in roots
-        and second entry the number of iterations. Has dimension (n,n)
+        numpy-Array with each entry being a (3,.) numpy-Array, first and second entry is the index of the root in roots
+        and third entry the number of iterations. Has dimension (n,n)
     roots : list
         list with all roots of the function from wich the roots were calculated
     """
@@ -116,24 +116,33 @@ def sort_roots(roots_grid, n, max_iterations = 100, border = 10**(-3)):
     for y in range(len(roots_grid)):
         for x in range(len(roots_grid)):
             temp_point = np.array([roots_grid[y,x][0],roots_grid[y,x][1]])
+            # print("temp_point = ",temp_point)
             if roots_grid[y,x][0] == np.inf:
                 roots_grid[y,x][0] == len(roots)-1
                 roots_grid[y,x][1] == len(roots)-1
                 continue
+            # print("y,x = ",y, x)
             for i in range(len(roots)-1):
-                temp_root = np.array([sum(roots[i])[0]/len(roots[i]),sum(roots[i][1])/len(roots[i])])
-                distance = np.linalg.norm(temp_point-temp_root)
-                if distance < border:
-                    roots[i].append(roots_grid[y,x])
+                if roots[i] == []:
+                    roots[i].append(temp_point)
                     roots_grid[y,x] = [i,i,roots_grid[y,x][2]]
                     break
-                if roots[i] == []:
-                    roots[i].append(roots_grid[y,x])
+                # print("i = ", i)
+                # print("roots[i] = ", roots[i])
+                # print("length roots[i] = ", len(roots[i]))
+                # print("sum(roots[i]) = ", sum(roots[i]))
+                temp_root = np.array([sum(roots[i])[0]/len(roots[i]),sum(roots[i])[1]/len(roots[i])])
+                distance = np.linalg.norm(temp_point-temp_root)
+                if distance < border:
+                    roots[i].append(temp_point)
                     roots_grid[y,x] = [i,i,roots_grid[y,x][2]]
                     break
     for i in range(len(roots)-1):
-        roots[i] = sum(roots[i]/len(roots[i]))
-        roots[i].remove(roots[i][2])
+        roots[i] = sum(roots[i])/len(roots[i])
+        # print("roots[i] = ",roots[i])
+        # roots[i].remove(roots[i][2])
+    roots[-1] = np.array([np.inf, np.inf])
+    # print("roots = ", roots)
     return roots_grid, roots
     
 # newton_approx mit allen werten aufrufen
