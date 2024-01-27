@@ -22,7 +22,13 @@ def get_natural(string):
                 break
         except: pass
     return number
+    
 
+def catch(func, *args):
+    handle=lambda e:np.array([[np.infty,np.infty],[np.infty,np.infty]])
+    try: return func(*args)
+    except Exception as e: return handle(e)
+    
 
 # In[3]
 

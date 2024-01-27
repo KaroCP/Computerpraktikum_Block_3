@@ -113,3 +113,11 @@ amp_slider.on_changed(update)
 
 # In[3]
 
+def catch(func, *args, handle=lambda e : e, **kwargs):
+    try:
+        return func(*args, **kwargs)
+    except Exception as e:
+        return handle(e)
+    
+# In[4]
+

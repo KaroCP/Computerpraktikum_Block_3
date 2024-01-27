@@ -21,12 +21,11 @@ import time
 # from sympy.abc import x
 # from sympy import diff
 # from sympy import lambdify
-# from sympy import roots
-# from sympy import solve
 
 old = False
 if old: from newton_works import newton_approx #TODO
-else:   from newton_von_Valentino import newton_approx
+else:   
+    from newton_von_Valentino_hoffentlich_richtig import newton_approx_with_grid,sort_roots
 
 
 # In[2]
@@ -242,9 +241,13 @@ class Fractal:
                         [px,py],self.roots[:-1],self.max_iteration,self.tolerance))
             root_hue, iter_light = newton(*grid)
         else: 
-            value = newton_approx(self.func,self.diff,grid,self.max_iteration,self.tolerance)
+            polynom_degre = 3 #TODO
+            roots_grid = newton_approx_with_grid(self.func, self.diff, grid, self.max_iteration, self.tolerance)
+            value = sort_roots(roots_grid, polynom_degre, self.max_iteration, self.tolerance)
+            # value = newton_approx_with_grid(self.func,self.diff,grid,self.max_iteration,self.tolerance)
             self.set_roots(value[1])
-            root_hue, iter_light = value[0].transpose(2,0,1)
+            root_hue = value[0][:,:,-1]
+            iter_light = value[0][:,:,-1]
         iter_light = np.array((7/8*iter_light/self.max_iteration+1/8))
         root_hue = self.colors[root_hue.astype(int)]
 
