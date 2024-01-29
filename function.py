@@ -22,10 +22,9 @@ import time
 # from sympy import diff
 # from sympy import lambdify
 
-old = False
+old = True
 if old: 
-    new = False
-    from newton_works import newton_approx,newton_with_matrices,newton #TODO
+    from newton_works import newton_with_matrices#,newton_approx,newton #TODO
 else:   
     polynom_degre = 3 #TODO
     from newton_von_Valentino_hoffentlich_richtig import newton_approx_with_grid,sort_roots
@@ -142,12 +141,7 @@ class Fractal:
                                  np.imag(f_diff(a+b*1J)*1J)]]
         if np.any(zeroset == None): zeroset = None
         self.label = label
-        if old: 
-            if new:
-                self.func = np.vectorize(func)
-                self.diff = np.vectorize(f_diff)
-            else: self.set_roots(np.append(zeroset,[[np.Inf,np.Inf]], axis=0))
-        else: self.set_roots(None)
+        self.set_roots(None)
         
         self.max_iteration = max_iter
         self.tolerance = tol
@@ -205,10 +199,20 @@ class Fractal:
     def set_roots(self,roots):
         if np.any(roots==None): 
             self.roots = None
-            self.colors = None #self.roots, and self.color are defined #TODO
+            self.colors = None
         else:
             self.roots = np.array(roots)
             self.colors = np.linspace(0,1,len(self.roots))
+            
+    
+    def get_info_str(self):
+        c_roots = self.roots[:,0]+1J*self.roots[:,1]
+        textstr1 = '\n'.join(("The function ist "+self.label,
+                             "The roots with color are ", ""))
+        textstr2 = '\n'.join([str(np.csingle(c_roots[i]))+", "+
+                              str(int(255*self.colors[i])) for i in range(len(c_roots)-1)])
+        return textstr1+textstr2
+        
         
     
 # In[4]
@@ -219,22 +223,22 @@ class Fractal:
         """
         self.fig.clf() # Clear canvas
         ax = self.fig.add_subplot() # create new subplot
-        ax.set_title(self.label)
+        # ax.set_title(self.label)
         
         # renew plots
         if self.recalculate: 
             grid = np.meshgrid(np.linspace(*self.lims[-1,:,0],self.density),
                                np.linspace(*self.lims[-1,:,1],self.density))
-            if old:
-                if new: grid = grid[0]+1J*grid[1]
-            if self.fast: #TODO
-                self.plot_data = subprocess.run(["/newton_c++.exe", "KARO's INPUT"]) 
-            else: self.plot_data = self.color_newton(grid)
+            # if self.fast: #TODO
+            #     self.plot_data = subprocess.run(["/newton_c++.exe", "KARO's INPUT"]) 
+            # else: 
+            self.plot_data = self.color_newton(grid)
             self.recalculate = False
         # set origin to habe not inverst y-axis.
         # Give extend to have realistic subscription at the axis.
         ax.imshow(self.plot_data, origin="lower", extent = self.lims[-1].T.flatten())
         if self.rectangle != None: ax.add_patch(self.rectangle)
+        plt.figtext(0.4, 0.75, self.get_info_str(),bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
         
         # draw
         self.fig.canvas.draw()
@@ -247,30 +251,28 @@ class Fractal:
         """
         Calculates and plots the fractal structure on the grid.
         """
-        h = np.vectorize(colorsys.hls_to_rgb)
+        # start_time = time.perf_counter()
         if old:
-            if new:
-                root_hue, iter_light, roots = newton(self.func, 
-                            self.diff, grid, self.max_iteration, self.tolerance)
-                # TODO convert complex to real
-                self.set_roots(roots)
-            else:
-                newton = np.vectorize(lambda px, py: newton_approx(self.func,self.diff,
-                            [px,py],self.roots[:-1],self.max_iteration,self.tolerance))
-                root_hue, iter_light = newton(*grid)
-                # root_hue, iter_light, roots = newton_with_matrices(self.func, 
-                #             self.diff, grid, self.max_iteration, self.tolerance)
-                # self.set_roots(roots)
+            # newton = np.vectorize(lambda px, py: newton_approx(self.func,self.diff,
+            #             [px,py],self.roots[:-1],self.max_iteration,self.tolerance))
+            # root_hue, iter_light = newton(*grid)
+            root_hue, iter_light, roots = newton_with_matrices(self.func, 
+                        self.diff, grid, self.max_iteration, self.tolerance)
+            self.set_roots(roots)
         else: 
             roots_grid = newton_approx_with_grid(self.func, self.diff, grid, self.max_iteration, self.tolerance)
-            value = sort_roots(roots_grid, polynom_degre, self.max_iteration, self.tolerance)
-            self.set_roots(value[1])
-            root_hue = value[0][:,:,0]
-            iter_light = value[0][:,:,2]
+            value, roots = sort_roots(roots_grid, polynom_degre, self.max_iteration, self.tolerance)
+            self.set_roots(roots)
+            root_hue = value[:,:,0]
+            iter_light = value[:,:,2]
+        # end_time = time.perf_counter()
+        #print(end_time-start_time, "old =",old) #TOOD
         iter_light = np.array((7/8*iter_light/self.max_iteration+1/8))
+        iter_light[root_hue==len(roots)-1] = 1
         root_hue = self.colors[root_hue.astype(int)]
 
-        return np.array(h(root_hue,iter_light,1)).transpose(1,2,0)
+        return np.array(np.vectorize(
+            colorsys.hls_to_rgb)(root_hue,iter_light,1)).transpose(1,2,0)
         
     
 # In[6]

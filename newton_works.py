@@ -78,8 +78,8 @@ def newton_with_matrices(func, f_diff, grid, max_iterations, border):
                             for j in range(dim)] for i in range(dim)])
         value = value_old-np.array([[[0,0] if mask_old[i,j] 
                           else np.matmul(Jacobi[i,j],func(*value_old[i,j])) 
-                          for j in range(dim)] for i in range(dim)]) #TODO nan occurd in Listcomprehension
-        mask = np.linalg.norm(value-value_old,axis=2)<border
+                          for j in range(dim)] for i in range(dim)])
+        mask = np.logical_or(Jacobi[:,:,0,0]==np.Inf,np.linalg.norm(value-value_old,axis=2)<border)
         iterations[(mask.astype(int)-mask_old.astype(int)).astype(bool)] = i+1
         if mask.all(): break
     value[(1-mask.astype(int)).astype(bool)] = [np.Inf,np.Inf]
@@ -95,9 +95,9 @@ def newton_with_matrices(func, f_diff, grid, max_iterations, border):
 def get_roots_from_data_with_matrices(value, border):
     dim = value.shape[1]
     data = value.reshape((dim*dim,2))
-    roots_set = [[data[0]]]
-    for point in data[1:]:
-        if point[0]!=np.Inf:
+    roots_set = []
+    for point in data:
+        if np.Inf not in point and roots_set!=[]:
             appended = False
             for r_set in roots_set:
                 if np.min(np.linalg.norm(np.array(r_set)-point,axis=1))<10*border:
@@ -106,54 +106,11 @@ def get_roots_from_data_with_matrices(value, border):
                     break
             if not appended:
                 roots_set.append([point])
+        elif point[0]!=np.Inf:
+            roots_set = [[data[0]]]
+    if len(roots_set[0])==1: 
+        roots_set.pop(0)
     roots = np.array([np.average(r_set,axis=0) for r_set in roots_set])
-    roots = roots[np.lexsort(roots.T)]
-    return roots
-    
-    
-
-# In[4]
-
-def newton(func, f_diff, grid, max_iterations, border):
-    value = np.array(grid).copy() #now itw a matrix containing (2,) arrays
-    dim = value.shape[1]
-    iterations = np.zeros_like(value)
-    mask = np.zeros_like(value)
-    
-    for i in range(max_iterations):
-        value_old = value.copy()
-        mask_old = mask.copy()
-        value = value_old-np.array([[0 if mask_old[i,j] 
-                    else catch(lambda x:func(value_old[i,j])/x,f_diff(value_old[i,j],np.Inf))
-                    for j in range(dim)] for i in range(dim)]) #TODO nan occurd in Listcomprehension
-        mask = value==np.Inf or np.linalg.abs(value-value_old)<border
-        iterations[(mask.astype(int)-mask_old.astype(int)).astype(bool)] = i+1
-        if mask.all(): break
-    value[(1-mask.astype(int)).astype(bool)] = np.Inf
-    
-    roots = get_roots_from_data(value, border)
-    indexes = np.array([[len(roots) if value[i,j]==np.Inf
-                         else np.argmin(np.linalg.abs(value[i,j]-roots))
-                         for j in range(dim)] for i in range(dim)])
-    roots = np.append(roots, np.Inf)
-    return indexes, iterations, roots
-    
-
-def get_roots_from_data(value, border):
-    dim = value.shape[1]
-    data = value.reshape((dim*dim,2))
-    roots_set = [[data[0]]]
-    for point in data[1:]:
-        if point!=np.Inf:
-            appended = False
-            for r_set in roots_set:
-                if np.min(np.linalg.abs(np.array(r_set)-point))<10*border:
-                    r_set.append(point)
-                    appended = True
-                    break
-            if not appended:
-                roots_set.append([point])
-    roots = np.array([np.average(r_set) for r_set in roots_set])
     roots = roots[np.lexsort(roots.T)]
     return roots
     
