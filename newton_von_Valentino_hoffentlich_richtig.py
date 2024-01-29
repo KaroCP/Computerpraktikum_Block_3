@@ -58,22 +58,16 @@ def newton_approx_with_grid(f, f_diff, grid, max_iterations = 100, border = 10**
     roots_grid : numpy-Array
         numpy-Array with each entry being a (3,.) numpy-Array, first entry is the x-coordinate of the root,
         second entry the y-coordinate of the root and the third entry the number of iterations to get the root. Has dimension (n,n)
-    iterations_grid : numpy-Array
-        Array with each entry being an int representing the number of iterations, needed to terminate for the start_point at position [y,x]
-        in grid
-
     """
     x_grid = grid[0]
     y_grid = grid[1]
     roots_grid = np.zeros([x_grid.shape[0],x_grid.shape[1],3])
-    iterations_grid = np.zeros([x_grid.shape[0],x_grid.shape[1]])
     for y in range(len(y_grid)):
         for x in range(len(x_grid)):
             start_point = np.array([x_grid[y,x],y_grid[y,x]])
             root_temp, iterations_temp = newton_approx(f, f_diff, start_point, max_iterations = max_iterations, border = border)
             roots_grid[y,x] = np.array([root_temp[0],root_temp[1], iterations_temp])
-            iterations_grid[y,x] = iterations_temp
-    return roots_grid, iterations_grid
+    return roots_grid
 
 def sort_roots(roots_grid, n, max_iterations = 100, border = 10**(-3)):
     """
