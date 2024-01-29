@@ -7,6 +7,11 @@ Newton approximation. The compatible but not-current Modul.
 # In[1]
 
 import numpy as np
+# import matplotlib.pyplot as plt
+
+import warnings
+warnings.filterwarnings("ignore")
+
 from data_collection import catch
 
 # In[2]
@@ -43,7 +48,6 @@ def newton_approx(f, f_diff, start_point, zeroset, max_iterations = 200, border 
     iterations = 0
     x = start_point
     while iterations < max_iterations:
-        # jacobi = np.array([[f_diff(x[0],x[1])[0][0], f_diff(x[0],x[1])[0][1]],[f_diff(x[0],x[1])[1][0], f_diff(x[0],x[1])[1][1]]])
         jacobi = f_diff(x[0],x[1])
         jacobi = np.linalg.inv(jacobi)
         x = x - np.matmul(jacobi, f(x[0],x[1]))
@@ -56,74 +60,132 @@ def newton_approx(f, f_diff, start_point, zeroset, max_iterations = 200, border 
 
 # In[3]
     
-def newton(func, f_diff, grid, max_iterations, border):
-    # grid directly from np.meshgrid
-    grid = np.array(grid).copy().transpose(1,2,0) #now itw a matrix containing (2,) arrays
-    n = grid.shape[1]
-    Jacobi = np.array([[catch(np.linalg.inv,f_diff(*grid[i,j])) for j in range(n)] for i in range(n)])
-    iterations = np.zeros((n,n))
-    mask = Jacobi[:,:,0,0] == np.infty
+def newton_with_matrices(func, f_diff, grid, max_iterations, border):
+    value = np.array(grid).copy().transpose(1,2,0) #now itw a matrix containing (2,) arrays
+    dim = value.shape[1]
+    Jacobi = np.array([[catch(np.linalg.inv,f_diff(*value[i,j]),
+                              handle=np.array([[np.Inf,np.Inf],[np.Inf,np.Inf]])) 
+                        for j in range(dim)] for i in range(dim)])
+    iterations = np.zeros((dim,dim))
+    mask = Jacobi[:,:,0,0] == np.Inf
+    value[mask] = [np.Inf,np.Inf]
     
     for i in range(max_iterations):
-        grid_old = grid.copy()
+        value_old = value.copy()
         mask_old = mask.copy()
-        f_grid = np.array(func(grid_old[:,:,0],grid_old[:,:,1])).transpose(1,2,0)
-        grid = np.array([[grid_old[i,j] if mask_old[i,j] else Jacobi[i,j]@f_grid[i,j] for j in range(n)] for i in range(n)])
-        # grid = np.array([[grid_old[i,j] if mask_old[i,j] else Jacobi[i,j]@func(*grid_old[i,j]) for j in range(n)] for i in range(n)])
-        mask = np.linalg.norm(grid-grid_old,axis=2)<border
-        grid = np.nan_to_num(grid,nan=np.infty,posinf=np.infty)
-        mask[grid[:,:,0]==np.infty] = True
-        mask[grid[:,:,1]==np.infty] = True
-        # print((mask.astype(int)-mask_old.astype(int)).astype(bool),i)
+        Jacobi = np.array([[catch(np.linalg.inv,f_diff(*value[i,j]),
+                                  handle=np.array([[np.Inf,np.Inf],[np.Inf,np.Inf]])) 
+                            for j in range(dim)] for i in range(dim)])
+        value = value_old-np.array([[[0,0] if mask_old[i,j] 
+                          else np.matmul(Jacobi[i,j],func(*value_old[i,j])) 
+                          for j in range(dim)] for i in range(dim)]) #TODO nan occurd in Listcomprehension
+        mask = np.linalg.norm(value-value_old,axis=2)<border
         iterations[(mask.astype(int)-mask_old.astype(int)).astype(bool)] = i+1
-        # print(mask,i)
         if mask.all(): break
-    grid[mask] = np.infty
-    return grid, iterations
-        
+    value[(1-mask.astype(int)).astype(bool)] = [np.Inf,np.Inf]
+    
+    roots = get_roots_from_data_with_matrices(value, border)
+    indexes = np.array([[len(roots) if value[i,j,0]==np.Inf
+                         else np.argmin(np.linalg.norm(value[i,j]-roots,axis=1))
+                         for j in range(dim)] for i in range(dim)])
+    roots = np.append(roots, [[np.Inf,np.Inf]],axis=0)
+    return indexes, iterations, roots
+    
+
+def get_roots_from_data_with_matrices(value, border):
+    dim = value.shape[1]
+    data = value.reshape((dim*dim,2))
+    roots_set = [[data[0]]]
+    for point in data[1:]:
+        if point[0]!=np.Inf:
+            appended = False
+            for r_set in roots_set:
+                if np.min(np.linalg.norm(np.array(r_set)-point,axis=1))<10*border:
+                    r_set.append(point)
+                    appended = True
+                    break
+            if not appended:
+                roots_set.append([point])
+    roots = np.array([np.average(r_set,axis=0) for r_set in roots_set])
+    roots = roots[np.lexsort(roots.T)]
+    return roots
+    
+    
+
+# In[4]
+
+def newton(func, f_diff, grid, max_iterations, border):
+    value = np.array(grid).copy() #now itw a matrix containing (2,) arrays
+    dim = value.shape[1]
+    iterations = np.zeros_like(value)
+    mask = np.zeros_like(value)
+    
+    for i in range(max_iterations):
+        value_old = value.copy()
+        mask_old = mask.copy()
+        value = value_old-np.array([[0 if mask_old[i,j] 
+                    else catch(lambda x:func(value_old[i,j])/x,f_diff(value_old[i,j],np.Inf))
+                    for j in range(dim)] for i in range(dim)]) #TODO nan occurd in Listcomprehension
+        mask = value==np.Inf or np.linalg.abs(value-value_old)<border
+        iterations[(mask.astype(int)-mask_old.astype(int)).astype(bool)] = i+1
+        if mask.all(): break
+    value[(1-mask.astype(int)).astype(bool)] = np.Inf
+    
+    roots = get_roots_from_data(value, border)
+    indexes = np.array([[len(roots) if value[i,j]==np.Inf
+                         else np.argmin(np.linalg.abs(value[i,j]-roots))
+                         for j in range(dim)] for i in range(dim)])
+    roots = np.append(roots, np.Inf)
+    return indexes, iterations, roots
+    
+
+def get_roots_from_data(value, border):
+    dim = value.shape[1]
+    data = value.reshape((dim*dim,2))
+    roots_set = [[data[0]]]
+    for point in data[1:]:
+        if point!=np.Inf:
+            appended = False
+            for r_set in roots_set:
+                if np.min(np.linalg.abs(np.array(r_set)-point))<10*border:
+                    r_set.append(point)
+                    appended = True
+                    break
+            if not appended:
+                roots_set.append([point])
+    roots = np.array([np.average(r_set) for r_set in roots_set])
+    roots = roots[np.lexsort(roots.T)]
+    return roots
+    
+
 # In[10]
 
-# dim=15
+# dim=100
 # # grid = np.array([[[0,0],[0,1],[0,2]],[[1,0],[1,1],[1,2]],[[2,0],[2,1],[2,2]]])+[1,1]#.transpose(2,0,1)
-# grid = np.array(np.meshgrid(np.linspace(-2,2,dim),np.linspace(-2,2,dim)))#.transpose(1,2,0)
+# lims = 2
+# grid = np.array(np.meshgrid(np.linspace(-lims,lims,dim),np.linspace(-lims,lims,dim)))#.transpose(1,2,0)
 # f = lambda z:np.power(z,3)-1
 # f_ = lambda z:3*z**2
 # func = lambda a,b:[np.real(f(a+b*1J)), np.imag(f(a+b*1J))]
 # f_diff = lambda a,b:[[np.real(f_(a+b*1J)), np.real(f_(a+b*1J)*1J)],
-#                      [np.imag(f_(a+b*1J)), np.imag(f_(a+b*1J)*1J)]]
+#                       [np.imag(f_(a+b*1J)), np.imag(f_(a+b*1J)*1J)]]
 # # Jacobi = np.array([[np.linalg.inv(f_diff(*grid[i,j])) for j in range(dim)] for i in range(dim)])
 # # mask = np.array([[0,1,0],[1,1,1],[0,1,1]])
 
 
-# roots, iterations = newton(func,f_diff,grid,30,10e-7)
-# print(iterations)
+# # roots_index, iterations, roots = newton(func,f_diff,grid,100,10e-7)
+# back = newton_with_matrices(func,f_diff,grid,100,10e-7)
+# print(len(back))
 
 # In[11]
 
-# roots_here = roots.copy()
-# print(roots_here)
-# roots_here = np.nan_to_num(roots_here,nan=np.infty)
-# print(roots_here)
-# print(roots_here[5,6,0])
-# roots_here = np.sort(roots_here.reshape((dim*dim,2)) ,axis=1)
-
-# In[12]
-
-# i=7
-# grid = np.array(np.meshgrid(np.linspace(1,2,dim),np.linspace(0,1,dim))).transpose(1,2,0)
-# grid_old = grid.copy()
-# mask_old = np.zeros((dim,dim))#
-# # mask_old[:,1] = np.ones((n,))
-# f_grid = np.array(func(grid[:,:,0],grid[:,:,1])).transpose(1,0,2) #not (1,2,0) because dot sums over the secondlast entry
-# grid = np.array([[grid[i,j] if mask_old[i,j] else Jacobi[i,j]@f_grid[i,:,j] for j in range(dim)] for i in range(dim)])
-# # grid = np.where(mask,grid,np.diagonal(np.diagonal(np.dot(Jacobi,f_grid),axis1=0,axis2=3),axis1=0,axis2=2).transpose(1,2,0))
-# mask1 = np.linalg.norm(grid-grid_old,axis=2)<10e-1
-# grid2 = np.array([[grid[i,j] if mask1[i,j] else Jacobi[i,j]@f_grid[i,:,j] for j in range(dim)] for i in range(dim)])
-# mask2 = np.linalg.norm(grid2-grid,axis=2)<10e-1
-# # value = newton(func,f_diff,grid,32,30)
-# # print(grid[(mask,0)])
-# # print(func(grid[mask,0],grid[mask,1]))
-# iterations = np.zeros(grid.shape[1:])
-# # print(mask2.astype(int)-mask1.astype(int))
-# iterations[mask2.astype(int)-mask1.astype(int)] = i        
-# print(iterations)
+# a = np.array([[[0,0],[0,1],[0,2]], [[1,0],[1,1],[1,2]],[[2,0],[2,1],[2,2]]])
+# A = np.array([[np.Inf,np.Inf],[np.Inf,np.Inf]])
+# A = a.reshape(3*3,2)
+# print(A)
+# b = np.array([-1,2])
+# c = np.linalg.norm(b-A,axis=1)
+# # print(np.argmin(c))
+# # print(c)
+# mask = np.array([[0,1,1],[1,1,1],[0,1,0]]).astype(bool)
+# a[mask]=[5,5]

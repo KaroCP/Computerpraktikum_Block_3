@@ -121,3 +121,24 @@ def catch(func, *args, handle=lambda e : e, **kwargs):
     
 # In[4]
 
+def align_by_dist_2(A, B):
+    A = np.asarray(A, np.float64)
+    B = np.asarray(B, np.float64)
+    
+    dist_sqr = (A[:, 0, None] - B[:, 0, None].T)**2 + (A[:, 1, None] - B[:, 1, None].T)**2
+    print(dist_sqr)
+    min_dist_pt = np.argmin(dist_sqr, axis=1)
+    
+    reordered_B = B[min_dist_pt, :]
+    
+    num_pts = B.shape[0]
+    remaining_indices = list(set(range(num_pts)) - set(min_dist_pt))
+    remaining_B = B[remaining_indices, :]
+    
+    return np.vstack((reordered_B, remaining_B))
+
+# In[5]
+
+A = [[14,44],[16,47],[27,79]]
+B = [[14,46],[18,89],[27,79],[45,127],[16,46]]
+print(align_by_dist_2(B,B))

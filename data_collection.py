@@ -24,10 +24,12 @@ def get_natural(string):
     return number
     
 
-def catch(func, *args):
-    handle=lambda e:np.array([[np.infty,np.infty],[np.infty,np.infty]])
+def catch(func, *args, handle=None):
+    # handle=lambda e:np.array([[np.infty,np.infty],[np.infty,np.infty]])
     try: return func(*args)
-    except Exception as e: return handle(e)
+    except Exception as e: 
+        # print(e) #TODO
+        return handle
     
 
 # In[3]
