@@ -58,7 +58,7 @@ Please wait now. Your fractal will be assembled.""")
     roots = np.array([[np.real(np.power(zeta,k)),
                       np.imag(np.power(zeta,k))] for k in range(n)])
     label = "x^{}-1".format(n)
-    return f,diff,roots,label,dens,max_iter
+    return f,diff,label,dens,max_iter
     
  
 
@@ -94,21 +94,52 @@ data_set = [[f1_func, f1_diff, f1_0, "x**2-1", 10,10],
             [f4_func, f4_diff, f4_0, "x**5-1", 60,30],
             [f4_func, f4_diff, f4_0, "x**5-1", 200,50]]
 
+# In[5]
+
+f1_func = lambda z:z**3-1
+f1_diff = lambda z:3*z**2
+f1_label = "x**3-1"
+
+f2_func = lambda z:z**3-z
+f2_diff = lambda z:3*z**2-1
+f2_label = "x**3-x"
+
+f3_func = lambda z:1/z-1
+f3_diff = lambda z:-1/z**2
+f3_label = "1/x-1"
+
+f4_func = lambda z:(z**2-1)/z
+f4_diff = lambda z:1/z**2+1 # (2*z**2-z**2+1)/z**2
+f4_label = "(x**2-1)/x"
+
+f5_func = lambda z:1/z+z**2
+f5_diff = lambda z:-1/z**2+2*z
+f5_label = "1/z+z**2"
+
+data_set = [[f1_func, f1_diff, f1_label],
+            [f2_func, f2_diff, f2_label],
+            [f3_func, f3_diff, f3_label],
+            [f4_func, f4_diff, f4_label],
+            [f5_func, f5_diff, f5_label]]
+
 # In[6]
 
-def choose_fractal():
+def choose_fractal_from_data():
     print("""
-========================================
-First chose the function, which will be used to create the fractal.
-Input a number between 1 and 6 to choose.""")
-    while True:
-        string = input(" > ")
-        try: 
-            string = int(string)
-            if string in [1,2,3,4,5,6]: 
-                break
-        except: pass
-    return data_set[string-1]
+You can assemble the plot information by yourself.
+To simplify we consider given functions see data_collection.
+They are just test.""")
+    n = get_natural("""==================================================
+First chose the number of data.""")
+    dens = get_natural("""
+==================================================
+Now say the density of the pixel.""")
+    max_iter = get_natural("""
+==================================================
+Last enter the maximum number of iterations.""")
+    print("""
+Please wait now. Your fractal will be assembled.""")
+    return *data_set[n-1],dens,max_iter
         
 
 

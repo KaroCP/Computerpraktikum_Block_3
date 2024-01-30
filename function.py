@@ -14,7 +14,6 @@ import matplotlib.pyplot as plt
 
 from matplotlib.patches import Rectangle
 import colorsys
-import subprocess
 import time
 
 # from sympy.utilities.lambdify import implemented_function
@@ -24,7 +23,7 @@ import time
 
 old = True
 if old: 
-    from newton_works import newton_with_matrices#,newton_approx,newton #TODO
+    from newton_works import newton_with_matrices
 else:   
     polynom_degre = 3 #TODO
     from newton_von_Valentino_hoffentlich_richtig import newton_approx_with_grid,sort_roots
@@ -99,7 +98,7 @@ class Fractal:
     """
     # TODO inplement symbolic calculation of derivative.
     
-    def __init__(self,func,f_diff=None,zeroset=None,label=None,
+    def __init__(self,func,f_diff=None,label=None,
                  dens=50,max_iter=20,tol=10e-7, fast=True,pointer=None):
         """
         Parameters
@@ -139,7 +138,6 @@ class Fractal:
                                  np.real(f_diff(a+b*1J)*1J)],
                                 [np.imag(f_diff(a+b*1J)), 
                                  np.imag(f_diff(a+b*1J)*1J)]]
-        if np.any(zeroset == None): zeroset = None
         self.label = label
         self.set_roots(None)
         
@@ -253,9 +251,6 @@ class Fractal:
         """
         # start_time = time.perf_counter()
         if old:
-            # newton = np.vectorize(lambda px, py: newton_approx(self.func,self.diff,
-            #             [px,py],self.roots[:-1],self.max_iteration,self.tolerance))
-            # root_hue, iter_light = newton(*grid)
             root_hue, iter_light, roots = newton_with_matrices(self.func, 
                         self.diff, grid, self.max_iteration, self.tolerance)
             self.set_roots(roots)
@@ -266,9 +261,9 @@ class Fractal:
             root_hue = value[:,:,0]
             iter_light = value[:,:,2]
         # end_time = time.perf_counter()
-        #print(end_time-start_time, "old =",old) #TOOD
+        # print(end_time-start_time, "old =",old, "new old") #TOOD
         iter_light = np.array((7/8*iter_light/self.max_iteration+1/8))
-        iter_light[root_hue==len(roots)-1] = 1
+        iter_light[root_hue==len(self.roots)-1] = 1
         root_hue = self.colors[root_hue.astype(int)]
 
         return np.array(np.vectorize(

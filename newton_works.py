@@ -61,25 +61,23 @@ def newton_approx(f, f_diff, start_point, zeroset, max_iterations = 200, border 
 # In[3]
     
 def newton_with_matrices(func, f_diff, grid, max_iterations, border):
-    value = np.array(grid).copy().transpose(1,2,0) #now itw a matrix containing (2,) arrays
+    
+    def calculate_step(point):
+        return catch(lambda x:np.matmul(np.linalg.inv(x),func(*point)),
+                     f_diff(*point), handle=np.array([np.Inf,np.Inf]))
+    value = np.array(grid).copy().transpose(1,2,0) #now its a matrix containing (2,) arrays
     dim = value.shape[1]
-    Jacobi = np.array([[catch(np.linalg.inv,f_diff(*value[i,j]),
-                              handle=np.array([[np.Inf,np.Inf],[np.Inf,np.Inf]])) 
-                        for j in range(dim)] for i in range(dim)])
     iterations = np.zeros((dim,dim))
-    mask = Jacobi[:,:,0,0] == np.Inf
-    value[mask] = [np.Inf,np.Inf]
+    mask = np.zeros((dim,dim))
     
     for i in range(max_iterations):
         value_old = value.copy()
         mask_old = mask.copy()
-        Jacobi = np.array([[catch(np.linalg.inv,f_diff(*value[i,j]),
-                                  handle=np.array([[np.Inf,np.Inf],[np.Inf,np.Inf]])) 
-                            for j in range(dim)] for i in range(dim)])
         value = value_old-np.array([[[0,0] if mask_old[i,j] 
-                          else np.matmul(Jacobi[i,j],func(*value_old[i,j])) 
-                          for j in range(dim)] for i in range(dim)])
-        mask = np.logical_or(Jacobi[:,:,0,0]==np.Inf,np.linalg.norm(value-value_old,axis=2)<border)
+                                      else calculate_step(value[i,j])
+                                      for j in range(dim)] for i in range(dim)])
+        mask = np.logical_or(value[:,:,0]==np.Inf,
+                             np.linalg.norm(value-value_old,axis=2)<border)
         iterations[(mask.astype(int)-mask_old.astype(int)).astype(bool)] = i+1
         if mask.all(): break
     value[(1-mask.astype(int)).astype(bool)] = [np.Inf,np.Inf]
@@ -108,10 +106,12 @@ def get_roots_from_data_with_matrices(value, border):
                 roots_set.append([point])
         elif point[0]!=np.Inf:
             roots_set = [[data[0]]]
-    if len(roots_set[0])==1: 
+    # i = 0
+    # while i<len(roots_set):
+    if len(roots_set[0])==1: #TODO summarize those who ars equal, dont pop new data!
         roots_set.pop(0)
     roots = np.array([np.average(r_set,axis=0) for r_set in roots_set])
-    roots = roots[np.lexsort(roots.T)]
+    roots = roots[np.lexsort(-roots.T)]
     return roots
     
 
@@ -137,12 +137,17 @@ def get_roots_from_data_with_matrices(value, border):
 # In[11]
 
 # a = np.array([[[0,0],[0,1],[0,2]], [[1,0],[1,1],[1,2]],[[2,0],[2,1],[2,2]]])
-# A = np.array([[np.Inf,np.Inf],[np.Inf,np.Inf]])
-# A = a.reshape(3*3,2)
-# print(A)
-# b = np.array([-1,2])
-# c = np.linalg.norm(b-A,axis=1)
-# # print(np.argmin(c))
-# # print(c)
-# mask = np.array([[0,1,1],[1,1,1],[0,1,0]]).astype(bool)
-# a[mask]=[5,5]
+# # A = np.array([[np.Inf,np.Inf],[np.Inf,np.Inf]])
+# A = list(a.reshape(3*3,2))
+# # print(A)
+# # b = np.array([-1,2])
+# # c = np.linalg.norm(b-A,axis=1)
+# # # print(np.argmin(c))
+# # # print(c)
+# # mask = np.array([[0,1,1],[1,1,1],[0,1,0]]).astype(bool)
+# # a[mask]=[5,5]
+
+# for k,i in enumerate(A):
+#     if i[0]==1:
+#         A.pop(k)
+#     print(A,k)
