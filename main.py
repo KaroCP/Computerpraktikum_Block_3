@@ -1,5 +1,5 @@
 '''
-    The MAIN function of the Project. Here the user starts the plot.
+The MAIN function of the Project. Here the user starts the plot.
 '''
 #!/usr/bin/env python
 # coding: utf-8

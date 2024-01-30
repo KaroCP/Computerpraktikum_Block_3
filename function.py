@@ -7,6 +7,9 @@ That contains data like the function, which is used to construct the fractal,
 #!/usr/bin/env python
 # coding: utf-8
 
+# TODO inplement symbolic calculation of derivative.
+# TODO implement automatic zoom animation
+# TODO what todo with "fast" and "old"?
 # In[1]
 
 import numpy as np
@@ -16,16 +19,10 @@ from matplotlib.patches import Rectangle
 import colorsys
 import time
 
-# from sympy.utilities.lambdify import implemented_function
-# from sympy.abc import x
-# from sympy import diff
-# from sympy import lambdify
-
 old = True
-if old: 
-    from newton_works import newton_with_matrices
+if old: from newton_works import newton_with_matrices
 else:   
-    polynom_degre = 3 #TODO
+    polynom_degre = 3
     from newton_von_Valentino_hoffentlich_richtig import newton_approx_with_grid,sort_roots
 
 
@@ -94,9 +91,8 @@ class Fractal:
         Tests wether the figure is stil open (-> True) 
         or was closed (-> False).
     kino()
-        Placeholder for animated zoom. #TODO
+        Placeholder for animated zoom. 
     """
-    # TODO inplement symbolic calculation of derivative.
     
     def __init__(self,func,f_diff=None,label=None,
                  dens=50,max_iter=20,tol=10e-7, fast=True,pointer=None):
@@ -111,8 +107,6 @@ class Fractal:
             With functions as entries. The default is None.
             [df1/dx1 df1/dx1
              df2/dx1 df2/dx2]
-        zeroset : array-like with shape (n,2) with n arbitrary natural number
-            The set of roots from f in form of [real part, imaginary part]
         label : str, optional
             The mapping rule of f or some other symbol for it.
         dens : int
@@ -128,7 +122,7 @@ class Fractal:
             The default is True.
         pointer : arry of form [x,y].
             For the animated zoom. at which direction the zoom will be.
-            Still a bit #TODO!
+            Still a bit TODO!
         """
         
         # Consatants:
@@ -227,9 +221,6 @@ class Fractal:
         if self.recalculate: 
             grid = np.meshgrid(np.linspace(*self.lims[-1,:,0],self.density),
                                np.linspace(*self.lims[-1,:,1],self.density))
-            # if self.fast: #TODO
-            #     self.plot_data = subprocess.run(["/newton_c++.exe", "KARO's INPUT"]) 
-            # else: 
             self.plot_data = self.color_newton(grid)
             self.recalculate = False
         # set origin to habe not inverst y-axis.
@@ -251,7 +242,7 @@ class Fractal:
         """
         # start_time = time.perf_counter()
         if old:
-            root_hue, iter_light, roots = newton_with_matrices(self.func, 
+            roots, root_hue, iter_light = newton_with_matrices(self.func, 
                         self.diff, grid, self.max_iteration, self.tolerance)
             self.set_roots(roots)
         else: 
@@ -261,7 +252,7 @@ class Fractal:
             root_hue = value[:,:,0]
             iter_light = value[:,:,2]
         # end_time = time.perf_counter()
-        # print(end_time-start_time, "old =",old, "new old") #TOOD
+        # print(end_time-start_time, "old =",old) #TOOD
         iter_light = np.array((7/8*iter_light/self.max_iteration+1/8))
         iter_light[root_hue==len(self.roots)-1] = 1
         root_hue = self.colors[root_hue.astype(int)]
