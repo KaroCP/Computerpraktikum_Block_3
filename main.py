@@ -13,9 +13,11 @@ from data_collection import chose_fractal_x_times_n,choose_fractal_from_data
 # In[2]
 
 print("Welcome to our project")
+fix_data = True
+if fix_data: f = Fractal(*choose_fractal_from_data())
+else: f = Fractal(*chose_fractal_x_times_n())
 # Funfact: the "f = " part ist necessary for the interaction.
-f = Fractal(*chose_fractal_x_times_n())
-# f = Fractal(*choose_fractal_from_data())
+
 
 print("""
 Ready. 
