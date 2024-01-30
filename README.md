@@ -3,26 +3,34 @@ bei Herr Göddeke
 # Ausführen
 (Für Karos Part): Führe die main Datei aus und folge den Anweisungen in der Konsole. <br>
 Hinweis: Für Anzahl an Punkten "density" höchstens 200 angeben, sonst dauert das echt lange.
+Manuelle Schalter im Programm (noch verläufig, noch nicht sicher, wie es langfristig gelöst werden soll.):
+- "old" oben in functions: Wenn True wird Karos Newton verfahren verwendet; Wenn False wird Valentinos Newton Verfahren verwendet (nur Polynome von Grad (polynom_degre=)3)
+- "fix_data" in main: Wenn True wird aus einer gegebenden Menge an Beispiel_funktionen die Funktion gewählt; Wenn False wird auf das bisherige x^n-1 Polynom zurückgegriffen.
+  (Beides fragt in der Konsole noch eine Zahl ab, welche Funktion aus der Beispielklasse verwendet werden soll.)
 # Aufgaben
 Die AUFGABENSTELLUNG und ANWEISUNGEN Folder beinhaltet die Aufgabenstellung und weitere Hilfen zum Thema. Lies das Thema "Fraktale", das ist unser Thema. Die Einzelaufgaben sind:
 - Newtonverfahren implementieren (Valentino)
-- Beispiele suchen 
+- Beispiele suchen (Karo)
 - Laufzeit verbessern, Insbesondere Zeiten vergleichen, Konvergenzordnung vergleichen (Momo)
 - Interaktion implementieren (Karo)
-- Ableitung symbolisch berechnen
+- Ableitung symbolisch berechnen (Momo?)
 - Andere Berechnungsverfahren implementieren (Valentino)
+## (aktuelle) TODOs:
+- Was machen wir mit den manuellen Togglern "old" und "fix_data"?
+- Symbolische Berechnung der Ableitung einfügen. Und (über sympy) Einlesen einer beliebigen Funktion in der Konsole.
+- Automatischen Zoom (=Animation?) machen
+- (Mehr langfristig:) Wie wollen wir die Module (und die Funktionen) benennen. Weil die aktuellen Modulnamen passen nicht zu einem fertigen Projekt. (z.B. "old", "newton_wirks", "newton_von_Valentino", "functions")
+## Weitere Ideen
 - Parameterabhängige Funktionen als Beispiele machen
-<br>
-
 - Adaptive Max_Iteration (großes Max Iterarion und durch np.max teilen)
 - Beispiele (Kreisteilungspolynome gebrochen rationale Funktionen, trigonometrisch)
-- Dynamisches Berechnen (für rauszoomen) d.h. nutzt die schon berechneten pixel 
-
+- Dynamisches Berechnen (für rauszoomen) d.h. nutzt die schon berechneten Pixel 
 # Aufteilung
 Hier wird klargestellt wer was tut. Schreibt hier bitte immer rein, was ihr tut und am besten wie jeder euer Programmteile mit den anderen zu komunizieren hat. (Z.B. wenn's ein py-modul werden soll, das einfach erwähnen und wie es heißt...). Alle Dateinamen an denen ihr arbeitet, sollten in einer der folgenden Sektionen erwähnt werden.
 
 ## Valentino
-newton: Die Funktion newton_approx wird von color_newton in functions aufgerufen.
+### newton
+Die Funktion newton_approx wird von color_newton in functions aufgerufen.
 
 ## Karo
 Hier kurze Beschreibung der Module. Für genauere Informationen siehe Python Documentation.
@@ -31,12 +39,14 @@ Erstellt mithilfe von data_collection importierten Funktionen ein Fractal und gi
 ### functions
 Definiert die Klasse Fractal, die Daten wie die genutze Funktion oder das Iterationslevel speichert, den Plot erstellt und die Möglichkeit der Interaktion mit dem Plot definiert.<br>
 Die Funktion (genauso wie ihre Ableitung) werden als Lambdafunkktionen in einer komplexen Zahl eingegeben (z.B. f = lambda z:z**3-1).<br>
-Die Klasse ruft zur Berechnung des Plots - je nach Einstellung - die Funktion newton_approx in newton oder ??? in ?newton_C++? auf.
+Die Klasse ruft zur Berechnung des Plots - je nach Einstellung - die Funktion newton_approx in newton_von Valentino oder newton_with_matrices in newton_works auf.
 ### data_collection
-Sammelt und erstellt mögliche Daten für Fraktale. Und definiert Funktionen, durch die der Nutzer - mithilfe der Konsole - einen Datensatz auswählen kann.
+Sammelt und erstellt mögliche Daten für Fraktale. Und definiert Funktionen debug-Funktionen, durch die der Nutzer - mithilfe der Konsole - einen Datensatz auswählen kann.
+### newton_works
+Eine mögliche Implementation für den Newton Algorithmus.
 
 ## Momo
-### Programmteil/e : newton (revisited).
+### Programmteil/e : newton (revisited). (saad :-( )
 ### [Datei/Ordner]
 ORDNER : "newton_c++"
 ### [BESCHRIEBUNG-newton (rewisited)]	
