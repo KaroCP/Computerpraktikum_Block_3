@@ -9,7 +9,6 @@ That contains data like the function, which is used to construct the fractal,
 
 # TODO inplement symbolic calculation of derivative.
 # TODO implement automatic zoom animation (pointer)
-# TODO what todo with "fast" and "old"?
 # In[1]
 
 import numpy as np
@@ -18,14 +17,8 @@ import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider
 from matplotlib.patches import Rectangle
 import colorsys
-import time
 
-old = True
-if old:
-    from newton_works import newton_with_matrices
-else:
-    polynom_degre = 3
-    from newton_von_Valentino_hoffentlich_richtig import newton_approx_with_grid, sort_roots
+from newton import newton_approximation
 
 
 # In[2]
@@ -38,15 +31,15 @@ class Fractal:
     ----------
     fig : matplotlib.figure.Figure
         Figure form the interface.
-    func : function in two variables
+    func : function in one variable
         The function which generates the fractal. 
-    diff : function in two variables
-        At each point the Jacobian of func. 
+    diff : function in one variable
+        The derivative of func. 
     roots : np.ndarray
-        Array of the roots of func written as 2-dimensional data points.
-        With [Inf,Inf] as additional entry for divergence.
+        Array of the complex roots of func.
+        With Inf as additional entry for divergence.
     colors : np.ndarray
-        Array colors. for each root one color.
+        Array colors. For each root one color.
     label : str
         Name or maping rule of func.
     density : int
@@ -56,10 +49,6 @@ class Fractal:
         The default is 200.
     tolerance : float
         The tolerance in the newton approximation. The default is 0.01.
-    fast : bool, optional
-        Says which calculation will be used. 
-        The faster calculation with C++ or the slower one in python.
-        The default is True.
     lims : array of form [[x_min, y_min],[x_max, y_max]]
         Contains the information, in which area in the compley plane 
         the function is plotted.
@@ -96,8 +85,8 @@ class Fractal:
         Placeholder for animated zoom. 
     """
 
-    def __init__(self, func, f_diff=None, label=None,
-                 max_iter=128, dens=64, tol=10e-7, fast=True, pointer=None):
+    def __init__(self, func, diff=None, label=None,
+                 max_iter=128, dens=64, tol=10e-7, pointer=None):
         """
         Parameters
         ----------
@@ -118,23 +107,15 @@ class Fractal:
             The default is 200.
         tol : float
             The tolerance in the newton approximation. The default is 0.01.
-        fast : bool, optional
-            Says which calculation will be used. 
-            The faster calculation with C++ or the slower one in python.
-            The default is True.
         pointer : arry of form [x,y].
             For the animated zoom. at which direction the zoom will be.
             Still a bit TODO!
         """
 
         # Consatants:
-        self.func = lambda a, b: [np.real(func(a+b*1J)), np.imag(func(a+b*1J))]
-        if f_diff == None:
-            f_diff = self.calculate_diff()
-        self.diff = lambda a, b: [[np.real(f_diff(a+b*1J)),
-                                   np.real(f_diff(a+b*1J)*1J)],
-                                  [np.imag(f_diff(a+b*1J)),
-                                  np.imag(f_diff(a+b*1J)*1J)]]
+        self.func = func
+        if diff == None: self.calculate_diff(func)
+        self.diff = diff
         self.label = label
         self.set_roots(None)
 
@@ -146,9 +127,9 @@ class Fractal:
         self.fig.subplots(1)
         self.fig.subplots_adjust(left=0.15)
 
-        if pointer != None:
-            self.pointer = pointer
-            self.start_time = time.perf_counter()
+        # if pointer != None:
+        #     self.pointer = pointer
+        #     self.start_time = time.perf_counter()
 
         # Variables:
         self.lims = np.array([[[-1, -1], [1, 1]]])
@@ -168,7 +149,7 @@ class Fractal:
 
 # In[3]
 
-    def calculate_diff(self):
+    def calculate_diff(self,func):
         """
         Returns
         -------
@@ -182,11 +163,13 @@ class Fractal:
         # f_here = implemented_function('g', lambda x:f(x))
         # f_diff = diff(f_here(x),x)
         # f_diff = lambdify(x, f_diff(x))
-        raise NotImplementedError("The symbolic calculation of the derivative",
-                                  "has not yet been implemented.")
+        
+        # self.diff = 
         # except Exception as e:
         #     raise Exception(e,
         #         "The derivation could not be calculated symbolically.")
+        raise NotImplementedError("The symbolic calculation of the derivative",
+                                  "has not yet been implemented.")
 
     def set_roots(self, roots):
         if np.any(roots == None):
@@ -197,22 +180,17 @@ class Fractal:
             self.colors = np.linspace(0, 1, len(self.roots))
 
     def get_info_str(self):
-        c_roots = self.roots[:, 0]+1J*self.roots[:, 1]
         textstr1 = '\n'.join(("The function ist "+self.label,
                              "The roots with color in hsl are ", ""))
-        textstr2 = '\n'.join([str(np.csingle(c_roots[i]))+", " +
-                              str(int(255*self.colors[i])) for i in range(len(c_roots)-1)])
+        textstr2 = '\n'.join([str(np.csingle(self.roots[i]))+", " +
+                              str(int(255*self.colors[i])) 
+                              for i in range(len(self.roots)-1)])
         return textstr1+textstr2
 
     def slider_update(self,val):
-        # def button_release(event):
-        #     plt.disconnect(self.bindingidbuttonrelease)
-            # self.bindingidbuttonrelease = None
-            self.density = int(np.power(10,self.slider.val))
-            self.recalculate = True
-            self.update
-        # self.bindingidbuttonrelease = self.fig.canvas.mpl_connect(
-        #     'button_release_event', button_release)
+        self.density = int(np.power(10,self.slider.val))
+        self.recalculate = True
+        self.update
 
 
 # In[4]
@@ -227,11 +205,11 @@ class Fractal:
 
         # renew plots
         if self.recalculate:
-            grid = np.meshgrid(np.linspace(*self.lims[-1, :, 0], self.density),
-                               np.linspace(*self.lims[-1, :, 1], self.density))
+            grid =np.meshgrid(np.linspace(*self.lims[-1, :, 0], self.density),
+                              np.linspace(*self.lims[-1, :, 1], self.density))
             self.plot_data = self.color_newton(grid)
             self.recalculate = False
-        # set origin to habe not inverst y-axis.
+        # Set origin to habe no inverted y-axis.
         # Give extend to have realistic subscription at the axis.
         ax.imshow(self.plot_data, origin="lower",
                   extent=self.lims[-1].T.flatten())
@@ -240,14 +218,11 @@ class Fractal:
         plt.figtext(0.4, 0.75, self.get_info_str(), bbox=dict(
             boxstyle='round', facecolor='wheat', alpha=0.5))
         
+        # Init Slider
         slider_ax = self.fig.add_axes([0.06, 0.1, 0.02, 0.8])
-        self.slider = Slider(
-            ax=slider_ax,
-            label="Pixel density in log scale",
-            valmin=0.1,
-            valmax=3,
-            valinit=np.log10(self.density),
-            orientation="vertical")
+        self.slider = Slider(ax=slider_ax,
+            label="Pixel density in log scale", valmin=0.1, valmax=3.5, 
+            valinit=np.log10(self.density), orientation="vertical")
         self.slider.on_changed(self.slider_update)
 
         # draw
@@ -261,21 +236,9 @@ class Fractal:
         """
         Calculates and plots the fractal structure on the grid.
         """
-        start_time = time.perf_counter()
-        if old:
-            roots, root_hue, iter_light = newton_with_matrices(self.func,
-                                                               self.diff, grid, self.max_iteration, self.tolerance)
-            self.set_roots(roots)
-        else:
-            roots_grid = newton_approx_with_grid(
-                self.func, self.diff, grid, self.max_iteration, self.tolerance)
-            value, roots = sort_roots(
-                roots_grid, polynom_degre, self.max_iteration, self.tolerance)
-            self.set_roots(roots)
-            root_hue = value[:, :, 0]
-            iter_light = value[:, :, 2]
-        end_time = time.perf_counter()
-        print("Runntime:",end_time-start_time)
+        roots, root_hue, iter_light = newton_approximation(self.func,
+                        self.diff, grid, self.max_iteration, self.tolerance)
+        self.set_roots(roots)
         iter_light = np.array((7/8*iter_light/self.max_iteration+1/8))
         iter_light[root_hue == len(self.roots)-1] = 1
         root_hue = self.colors[root_hue.astype(int)]
@@ -312,7 +275,7 @@ class Fractal:
                 self.lims, [2*(self.lims[-1]-center)+center], axis=0)
             self.recalculate = True
             self.update()
-        elif event.key == "b":
+        elif event.key == "b": # Zoom to the last zoom
             if len(self.lims) == 1:
                 print("No zoom state before initial state.")
             else:
@@ -325,7 +288,7 @@ class Fractal:
 
 
     def zoom1(self, event):
-        value1 = np.array([event.xdata, event.ydata])
+        val1 = np.array([event.xdata, event.ydata])
 
         def motion_notify(event_2):
             """
@@ -338,9 +301,9 @@ class Fractal:
                 Object which contains the information of the coordinates of 
                 the mouse pointer.
             """
-            value2 = np.array([event_2.xdata, event_2.ydata])
-            if np.array(value2 != None).all():
-                self.rectangle = Rectangle(value1, *(value2-value1),
+            val2 = np.array([event_2.xdata, event_2.ydata])
+            if np.array(val2 != None).all():
+                self.rectangle = Rectangle(val1, *(val2-val1),
                                            color=(0.5, 0.5, 0.5, 0.7))
                 self.update()
         moving_id = self.fig.canvas.mpl_connect(
@@ -352,10 +315,10 @@ class Fractal:
             self.bindingidbuttonrelease = None
             self.rectangle = None
 
-            value2 = np.array([event_3.xdata, event_3.ydata])
-            if None not in np.array([value1, value2]) and not (value1-value2 == 0).any():
+            val2 = np.array([event_3.xdata, event_3.ydata])
+            if None not in np.array([val1,val2]) and not (val1-val2==0).any():
                 self.lims = np.append(
-                    self.lims, [np.sort([value1, value2], axis=0)], axis=0)
+                    self.lims, [np.sort([val1, val2], axis=0)], axis=0)
                 self.recalculate = True
                 self.update()
             else:
@@ -372,7 +335,7 @@ class Fractal:
         if np.any(position == None):
             position = np.sum(self.lims[-1], axis=0)/2
         self.lims = np.append(self.lims,
-                              [(1-0.05*event.step)*(self.lims[-1]-position)+position], axis=0)
+            [(1-0.05*event.step)*(self.lims[-1]-position)+position], axis=0)
         self.recalculate = True
         self.update()
 
