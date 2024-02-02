@@ -94,8 +94,8 @@ plt.plot(*A, c=colorsys.hsv_to_rgb(0,1,0.5))
 
 fig, ax = plt.subplots()
 line, = ax.plot(a, a, lw=5, c=colorsys.hsv_to_rgb(0,1,0.5))
-fig.subplots_adjust(left=0.25, bottom=0.25) # make room for sliders
-ax_slider = fig.add_axes([0.1, 0.25, 0.0225, 0.63])
+fig.subplots_adjust(left=0.15) # make room for sliders
+ax_slider = fig.add_axes([0.06, 0.1, 0.02, 0.8])
 amp_slider = Slider(
     ax=ax_slider,
     label="Color",

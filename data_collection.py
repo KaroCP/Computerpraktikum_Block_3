@@ -40,13 +40,13 @@ You can assemble the plot information by yourself.
 To simplify we consider functions like x^n-1.
 They usually induce a fractal structure""")
     n = get_natural("""==================================================
-First chose the power n.""")
-    dens = get_natural("""
-==================================================
-Now say the density of the pixel.""")
-    max_iter = get_natural("""
-==================================================
-Last enter the maximum number of iterations.""")
+Please chose the power n.""")
+#     dens = get_natural("""
+# ==================================================
+# Now say the density of the pixel.""")
+#     max_iter = get_natural("""
+# ==================================================
+# Last enter the maximum number of iterations.""")
     print("""
 Please wait now. Your fractal will be assembled.""")
     f = lambda z:z**n-1
@@ -55,7 +55,7 @@ Please wait now. Your fractal will be assembled.""")
     # roots = np.array([[np.real(np.power(zeta,k)),
     #                   np.imag(np.power(zeta,k))] for k in range(n)])
     label = "x^{}-1".format(n)
-    return f,diff,label,dens,max_iter
+    return f,diff,label#,max_iter#,dens
     
  
 
@@ -95,19 +95,27 @@ Please wait now. Your fractal will be assembled.""")
 
 f1_func = lambda z:z**3-1
 f1_diff = lambda z:3*z**2
-f1_label = "x**3-1"
+f1_label = "x^3-1"
 
 f2_func = lambda z:z**3-z
 f2_diff = lambda z:3*z**2-1
-f2_label = "x**3-x"
+f2_label = "x^3-x"
+
+f10_func = lambda z:z**4-z**2+1
+f10_diff = lambda z:4*z**3-2*z
+f10_label = "x^4-x^2+1"
+
+f11_func = lambda z:z**12-1
+f11_diff = lambda z:12*z**11
+f11_label = "x^12-1"
 
 f4_func = lambda z:(z**2-1)/z
 f4_diff = lambda z:1/z**2+1 # (2*z**2-z**2+1)/z**2
-f4_label = "(x**2-1)/x"
+f4_label = "(x^2-1)/x"
 
 f5_func = lambda z:1/z+z**2
 f5_diff = lambda z:-1/z**2+2*z
-f5_label = "1/z+z**2"
+f5_label = "1/z+z^2"
 
 f6_func = lambda z:np.sin(z)
 f6_diff = lambda z:np.cos(z)
@@ -129,15 +137,17 @@ f9_func = lambda z:np.exp(-z)-1
 f9_diff = lambda z:-np.exp(-z)
 f9_label = "e^(-x)-1"
 
-data_set = [[f1_func, f1_diff, f1_label],
-            [f2_func, f2_diff, f2_label],
-            [f4_func, f4_diff, f4_label],
-            [f5_func, f5_diff, f5_label],
-            [f9_func, f9_diff, f9_label],
-            [f6_func, f6_diff, f6_label],
-            [f7_func, f7_diff, f7_label],
-            [f8_func, f8_diff, f8_label],
-            [f3_func, f3_diff, f3_label]]
+data_set = [[ f1_func,  f1_diff,  f1_label],
+            [ f2_func,  f2_diff,  f2_label],
+            [f10_func, f10_diff, f10_label],
+            [f11_func, f11_diff, f11_label],
+            [ f4_func,  f4_diff,  f4_label],
+            [ f5_func,  f5_diff,  f5_label],
+            [ f9_func,  f9_diff,  f9_label],
+            [ f6_func,  f6_diff,  f6_label],
+            [ f7_func,  f7_diff,  f7_label],
+            [ f8_func,  f8_diff,  f8_label],
+            [ f3_func,  f3_diff,  f3_label]]
 
 # In[6]
 
@@ -147,17 +157,17 @@ You can assemble the plot information by yourself.
 To simplify we consider given functions see data_collection.
 They are just test.""")
     n = get_natural("""==================================================
-First chose the number of data. There is
+Please chose the number of data. There are
 """+"\n".join([str(i+1)+") "+data_set[i][2] for i in range(len(data_set))]))
-    dens = get_natural("""
-==================================================
-Now say the density of the pixel.""")
-    max_iter = get_natural("""
-==================================================
-Last enter the maximum number of iterations.""")
+#     dens = get_natural("""
+# ==================================================
+# Now say the density of the pixel.""")
+#     max_iter = get_natural("""
+# ==================================================
+# Last enter the maximum number of iterations.""")
     print("""
 Please wait now. Your fractal will be assembled.""")
-    return *data_set[n-1],dens,max_iter
+    return data_set[n-1]#,max_iter#,dens
         
 
 
