@@ -65,7 +65,7 @@ def newton_approximation(func, diff, grid, max_iterations, border):
     iterations = np.zeros((dim,dim))
     done = np.zeros((dim,dim)).astype(bool)
     
-    # Iteration step for those, where done is False
+    # Iteration step for those, where done is False.
     for i in range(max_iterations):
         value_old = value.copy()
         done_old = done.copy()

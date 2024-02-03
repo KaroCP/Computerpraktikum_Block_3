@@ -6,7 +6,7 @@ The MAIN function of the Project. Here the user starts the plot.
 
 # In[1]
 
-from function import Fractal
+from fractal import Fractal
 from data_collection import chose_fractal_x_times_n,choose_fractal_from_data
 
 
@@ -32,7 +32,9 @@ You have two zoom options:
     You can switch the zoom options with 'z'.
 Press 'b' to zoome back to the last zoom settings.
 Press 'o' to zoome (a fix property) out.
-Press 'r' to reset the zoom.""")
+Press 'r' to reset the zoom.
+
+""")
 
 
 # In[3] 
