@@ -46,7 +46,7 @@ class Fractal:
         number of pixel in each row and colum.
     max_iterations : int
         The number if the maximal iterations in the newton approximation.
-        The default is 200.
+        The default is 128.
     tolerance : float
         The tolerance in the newton approximation. The default is 0.01.
     lims : array of form [[x_min, y_min],[x_max, y_max]]
@@ -143,6 +143,7 @@ class Fractal:
                                                          self.zoom1)
         self.rectangle = None
         self.recalculate = True
+        self.text = False
 
         self.update()
 
@@ -171,6 +172,7 @@ class Fractal:
         raise NotImplementedError("The symbolic calculation of the derivative",
                                   "has not yet been implemented.")
 
+
     def set_roots(self, roots):
         if np.any(roots == None):
             self.roots = None
@@ -179,13 +181,18 @@ class Fractal:
             self.roots = np.array(roots)
             self.colors = np.linspace(0, 1, len(self.roots))
 
+
     def get_info_str(self):
-        textstr1 = '\n'.join(("The function ist "+self.label,
-                             "The roots with color in hsl are ", ""))
-        textstr2 = '\n'.join([str(np.csingle(self.roots[i]))+", " +
+        textstr1 = '\n'.join(("The function is "+self.label,
+                        "and the fractal is ploted with {}*{} pixels.".format(
+                            self.density,self.density),
+                        "The {} roots with resp. color in hsl are:".format(
+                            len(self.roots)),""))
+        textstr2 = '\n'.join([str(self.roots[i])+", " +
                               str(int(255*self.colors[i])) 
                               for i in range(len(self.roots)-1)])
         return textstr1+textstr2
+
 
     def slider_update(self,val):
         self.density = int(np.power(10,self.slider.val))
@@ -198,10 +205,15 @@ class Fractal:
     def update(self):
         """
         Method to update the plot with a new grid.
+        
+        If self.recalculate is True new plot data will be calculated. 
+            Otherwise the old plot data will be used.
+        If self.text is True a Infobox will be printed on the plot.
+        If one is zooming with zoom option 1 a rectangle will be drawn.
+        At the left side a slider for the density will be drawn.
         """
         self.fig.clf()  # Clear canvas
         ax = self.fig.add_subplot()  # create new subplot
-        # ax.set_title(self.label)
 
         # renew plots
         if self.recalculate:
@@ -213,10 +225,13 @@ class Fractal:
         # Give extend to have realistic subscription at the axis.
         ax.imshow(self.plot_data, origin="lower",
                   extent=self.lims[-1].T.flatten())
+        if self.text:
+            to_text = plt.figtext(0.5, 0.95, self.get_info_str(), fontsize=6,
+                    bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.9))
+            to_text.set_horizontalalignment("center")
+            to_text.set_verticalalignment("top")
         if self.rectangle != None:
             ax.add_patch(self.rectangle)
-        plt.figtext(0.4, 0.75, self.get_info_str(), bbox=dict(
-            boxstyle='round', facecolor='wheat', alpha=0.5))
         
         # Init Slider
         slider_ax = self.fig.add_axes([0.06, 0.1, 0.02, 0.8])
@@ -244,7 +259,7 @@ class Fractal:
         root_hue = self.colors[root_hue.astype(int)]
 
         return np.array(np.vectorize(
-            colorsys.hls_to_rgb)(root_hue, iter_light, 1)).transpose(1, 2, 0)
+            colorsys.hls_to_rgb)(root_hue, iter_light, 1)).transpose(1,2,0)
 
 
 # In[6]
@@ -265,6 +280,13 @@ class Fractal:
                     'scroll_event', self.zoom2)
                 self.bindingidtranslation = self.fig.canvas.mpl_connect(
                     'button_press_event', self.translation)
+        elif event.key == "b": # Zoom to the last zoom
+            if len(self.lims) == 1:
+                print("No zoom state before initial state.")
+            else:
+                self.lims = np.delete(self.lims, -1, axis=0)
+                self.recalculate = True
+                self.update()
         elif event.key == "r":  # reset
             self.lims = np.array([[[-1, -1], [1, 1]]])
             self.recalculate = True
@@ -275,13 +297,9 @@ class Fractal:
                 self.lims, [2*(self.lims[-1]-center)+center], axis=0)
             self.recalculate = True
             self.update()
-        elif event.key == "b": # Zoom to the last zoom
-            if len(self.lims) == 1:
-                print("No zoom state before initial state.")
-            else:
-                self.lims = np.delete(self.lims, -1, axis=0)
-                self.recalculate = True
-                self.update()
+        elif event.key == "t": # Toggle infobox
+            self.text = not self.text
+            self.update()
 
 
 # In[7]
