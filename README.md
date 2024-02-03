@@ -4,7 +4,6 @@ bei Herr Göddeke
 (Für Karos Part): Führe die main Datei aus und folge den Anweisungen in der Konsole. <br>
 Hinweis: Für Anzahl an Punkten "density" höchstens 200 angeben, sonst dauert das echt lange. <br>
 Manuelle Schalter im Programm (noch verläufig, noch nicht sicher, wie es langfristig gelöst werden soll.):
-- "old" oben in functions: Wenn True wird Karos Newton verfahren verwendet; Wenn False wird Valentinos Newton Verfahren verwendet (nur Polynome von Grad (polynom_degre=)3)
 - "fix_data" in main: Wenn True wird aus einer gegebenden Menge an Beispiel_funktionen die Funktion gewählt; Wenn False wird auf das bisherige x^n-1 Polynom zurückgegriffen.
   (Beides fragt in der Konsole noch eine Zahl ab, welche Funktion aus der Beispielklasse verwendet werden soll.)
 # Aufgaben
