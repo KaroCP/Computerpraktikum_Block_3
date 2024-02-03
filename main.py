@@ -23,14 +23,14 @@ print("""Ready.
       
 You can interact with the plot.
 ==================================================
-Press 't' to toggle a infotextbox on and of.
+Press 't' to toggle an infotextbox on and of.
 You have two zoom options:
     First you can zoom by drawing a rectangle.
     Second you can zoom with the mouse wheel 
         and move the plot with drag and drop.
         Use this option only when the canlulation is fast!
     You can switch the zoom options with 'z'.
-Press 'b' to zoome to the last zoom settings.
+Press 'b' to zoome back to the last zoom settings.
 Press 'o' to zoome (a fix property) out.
 Press 'r' to reset the zoom.""")
 
