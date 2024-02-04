@@ -15,10 +15,10 @@ Die AUFGABENSTELLUNG und ANWEISUNGEN Folder beinhaltet die Aufgabenstellung und 
 - Ableitung symbolisch berechnen (Momo?)
 - Andere Berechnungsverfahren implementieren (Valentino)
 ## (aktuelle) TODOs:
-- Was machen wir mit den manuellen Togglern "old" und "fix_data"?
+- Bericht für das Projekt schreiben. https://www.overleaf.com/project/65bfa1bcc677b426a3b87741
+- Was machen wir mit dem manuellen Toggler "fix_data"?
 - Symbolische Berechnung der Ableitung einfügen. Und (über sympy) Einlesen einer beliebigen Funktion in der Konsole.
 - Automatischen Zoom (=Animation?) machen
-- (Mehr langfristig:) Wie wollen wir die Module (und die Funktionen) benennen. Weil die aktuellen Modulnamen passen nicht zu einem fertigen Projekt. (z.B. "old", "newton_wirks", "newton_von_Valentino", "functions")
 ## Weitere Ideen
 - Parameterabhängige Funktionen als Beispiele machen
 - Adaptive Max_Iteration (großes Max Iterarion und durch np.max teilen)
