@@ -17,6 +17,8 @@ Die AUFGABENSTELLUNG und ANWEISUNGEN Folder beinhaltet die Aufgabenstellung und 
 ## (aktuelle) TODOs:
 - Bericht für das Projekt schreiben. https://www.overleaf.com/project/65bfa1bcc677b426a3b87741
 - Was machen wir mit dem manuellen Toggler "fix_data"?
+- Zeitmessung: Wie hängt die Berechnungszeit von der density ab. <br>
+  An sich erstmal für den Bericht. Ich fände es aber auch cool, wenn man eine Abschätzung für Berechnungsdauer printen lassen könnte (abhängig von der letzten Berechnungsdauer und der gewünschten Neuberechnung).
 - Symbolische Berechnung der Ableitung einfügen. Und (über sympy) Einlesen einer beliebigen Funktion in der Konsole.
 - Automatischen Zoom (=Animation?) machen
 ## Weitere Ideen
