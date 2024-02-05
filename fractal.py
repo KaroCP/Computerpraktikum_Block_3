@@ -92,7 +92,7 @@ class Fractal:
     set_lims(lims)
         Adds lims to the list of all previous limits.
     get_info_str()
-        Returns a string containig the information for the infonox.
+        Returns a string containig the information for the infobox.
     slider_update(value)
         The update function for the slider.
     update(recalculate=True)
@@ -122,8 +122,14 @@ class Fractal:
         be zoomed in automaticly.
     """
 
-    def __init__(self, func, diff=None, label=None, pointer=None, 
+    def __init__(self, func, diff=None, label=None, pointer=None,
                  density=64, max_iteration=128, tolerance=10e-7):
+        """
+        Parameters
+        ----------
+        Init parameters for the fractal.
+        Have to have the same type and desctiption als their class attribute.
+        """
         # Consatants:
         self.fig = plt.figure()  # This creates canvas
         self.fig.subplots(1)
@@ -184,23 +190,15 @@ class Fractal:
 
     def set_lims(self, lims=None):
         """
-            set_lims(lims)
         Adds lims to the list of all previous limits.
-    get_info_str()
-        Returns a string containig the information for the infonox.
-    slider_update(value)
-        The update function for the slider.
-
 
         Parameters
         ----------
-        lims : TYPE, optional
-            DESCRIPTION. The default is None.
-
-        Returns
-        -------
-        None.
-
+        lims : array-like of form [[x_min, y_min],[x_max, y_max]], optional
+            If not None lims will be added to self.lims and therefore become
+            the new limits. 
+            Otherwise the zoom will be reseted th the initial limits.
+            The default is None.
         """
         if np.any(lims == None):
             self.lims = [self.start_lims]
@@ -208,6 +206,19 @@ class Fractal:
     
 
     def get_info_str(self):
+        """
+        Returns a string containing the information for the infobox.
+        It concludes:
+            self.label i.e. the mapping rule of self.func
+            The number of pixels
+            The number of different calculated roots.
+            The complex roots with their respective color hue.
+
+        Returns
+        -------
+        str
+            Infostring about the function and the plot.
+        """
         textstr1 = '\n'.join(("The function is "+self.label,
                         "and the fractal is ploted with {}*{} pixels.".format(
                             self.density,self.density),
@@ -220,7 +231,15 @@ class Fractal:
 
 
     def slider_update(self,val):
-        self.density = int(np.power(10,self.slider.val))
+        """
+        The update function for the slider.
+
+        Parameters
+        ----------
+        val : numpy.float64
+            Contains the information of the slider value.
+        """
+        self.density = int(np.power(10,val))
         self.update(True)
 
 
@@ -275,7 +294,12 @@ class Fractal:
 
     def color_newton(self):
         """
-        Calculates the fractal structure on the grid.
+        Calculates the fractal structure on the grid.        
+
+        Returns
+        -------
+        np.ndarray of shape (self.density,self.density,3)
+            The plot data depending on the current settings.
         """
         grid = np.meshgrid(np.linspace(*self.lims[-1][:,0], self.density),
                            np.linspace(*self.lims[-1][:,1], self.density))
@@ -488,9 +512,13 @@ class Fractal:
         
     
     def kino(self):
-        # time.sleep(self.calulation_time*1.5)
-        self.set_lims(1/(time.perf_counter()-self.start_time)*(self.start_lims
-                                                -self.pointer)+self.pointer)
-        self.update(True)
+        """
+        Function for the animated zoom. If there is a pointer the plot will 
+        be zoomed in automaticly.
+        """
+        if self.pointer!=None:
+            self.set_lims(1/(time.perf_counter()-self.start_time)*(self.start_lims
+                                                    -self.pointer)+self.pointer)
+            self.update(True)
         
     

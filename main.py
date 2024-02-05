@@ -35,7 +35,7 @@ Press 'o' to zoome (a fix property) out.
 Press 'r' to reset the zoom.
 """)
 
-# if frac.pointer!=None:
-#     while frac.isVisible():
-#         frac.kino()
+if frac.pointer!=None:
+    while frac.isVisible():
+        frac.kino()
     
