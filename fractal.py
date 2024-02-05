@@ -17,6 +17,7 @@ import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider
 from matplotlib.patches import Rectangle
 import colorsys
+import time
 
 from newton import newton_approximation
 
@@ -85,7 +86,7 @@ class Fractal:
         Placeholder for animated zoom. 
     """
 
-    def __init__(self, func, diff=None, label=None,
+    def __init__(self, func, diff=None, label=None, pointer=None, 
                  max_iter=128, dens=64, tol=10e-7):
         """
         Parameters
@@ -114,7 +115,6 @@ class Fractal:
 
         # Consatants:
         self.func = func
-        if diff == None: self.calculate_diff(func)
         self.diff = diff
         self.label = label
 
@@ -126,12 +126,13 @@ class Fractal:
         self.fig.subplots(1)
         self.fig.subplots_adjust(left=0.15)
 
-        # if pointer != None:
-        #     self.pointer = pointer
-        #     self.start_time = time.perf_counter()
+        self.pointer = pointer
+        self.start_lims = np.array([[[-1, -1], [1, 1]]])
+        self.start_time = time.perf_counter()
 
         # Variables:
-        self.set_roots(None)
+        self.set_fast()
+        self.set_roots()
         self.set_lims()
         self.plot_data = np.zeros((self.density, self.density, 3))
 
@@ -150,30 +151,12 @@ class Fractal:
 
 # In[3]
 
-    def calculate_diff(self,func):
-        """
-        Returns
-        -------
-        f_diff : function
-            At each point (a,b) it is the Jacobi matrix of self.func
-        """
-        # x = sympy.symbols('x')
-        # func = lambda x:func(x)
-        # try: diff = sympy.lambdify(x,func(x).diff(x))
 
-        # f_here = implemented_function('g', lambda x:f(x))
-        # f_diff = diff(f_here(x),x)
-        # f_diff = lambdify(x, f_diff(x))
-        
-        # self.diff = 
-        # except Exception as e:
-        #     raise Exception(e,
-        #         "The derivation could not be calculated symbolically.")
-        raise NotImplementedError("The symbolic calculation of the derivative",
-                                  "has not yet been implemented.")
-
-
-    def set_roots(self, roots):
+    def set_fast(self, fast=True):
+        self.fast = fast
+    
+    
+    def set_roots(self, roots=None):
         if np.any(roots == None):
             self.roots = None
             self.colors = None
@@ -223,8 +206,10 @@ class Fractal:
 
         # renew plots
         if self.recalculate:
-            self.plot_data = self.color_newton()
-            # self.plot_data = #momos Daten
+            start_time = time.perf_counter()
+            if self.fast: self.plot_data = np.zeros((self.density, self.density, 3)) # momos Daten
+            else: self.plot_data = self.color_newton()
+            self.calulation_time = time.perf_counter()-start_time
             self.recalculate = False
         # Set origin to habe no inverted y-axis.
         # Give extend to have realistic subscription at the axis.
@@ -396,7 +381,7 @@ class Fractal:
 # In[9]
 
 
-    def isVisible(self):  # for animation. still TODO
+    def isVisible(self):
         """
         Tests wether the figure is stil open (-> True) 
         or was closed (-> False).
@@ -409,5 +394,13 @@ class Fractal:
         """
         still_open = self.fig.canvas.isVisible()
         return still_open
+        
+    
+    def kino(self):
+        # time.sleep(self.calulation_time*1.5)
+        self.set_lims(1/(time.perf_counter()-self.start_time)*(self.start_lims
+                                                -self.pointer)+self.pointer)
+        self.recalculate = True
+        self.update()
         
     
