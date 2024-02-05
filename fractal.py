@@ -86,7 +86,7 @@ class Fractal:
     """
 
     def __init__(self, func, diff=None, label=None,
-                 max_iter=128, dens=64, tol=10e-7, pointer=None):
+                 max_iter=128, dens=64, tol=10e-7):
         """
         Parameters
         ----------
@@ -117,7 +117,6 @@ class Fractal:
         if diff == None: self.calculate_diff(func)
         self.diff = diff
         self.label = label
-        self.set_roots(None)
 
         self.max_iteration = max_iter
         self.tolerance = tol
@@ -132,7 +131,8 @@ class Fractal:
         #     self.start_time = time.perf_counter()
 
         # Variables:
-        self.lims = np.array([[[-1, -1], [1, 1]]])
+        self.set_roots(None)
+        self.set_lims()
         self.plot_data = np.zeros((self.density, self.density, 3))
 
         self.zoom = True
@@ -180,7 +180,13 @@ class Fractal:
         else:
             self.roots = np.array(roots)
             self.colors = np.linspace(0, 1, len(self.roots))
+    
 
+    def set_lims(self, lims=None):
+        if np.any(lims == None):
+            self.lims = np.array([[[-1, -1], [1, 1]]])
+        else: self.lims = np.append(self.lims, lims, axis=0)
+    
 
     def get_info_str(self):
         textstr1 = '\n'.join(("The function is "+self.label,
@@ -217,9 +223,8 @@ class Fractal:
 
         # renew plots
         if self.recalculate:
-            grid =np.meshgrid(np.linspace(*self.lims[-1, :, 0], self.density),
-                              np.linspace(*self.lims[-1, :, 1], self.density))
-            self.plot_data = self.color_newton(grid)
+            self.plot_data = self.color_newton()
+            # self.plot_data = #momos Daten
             self.recalculate = False
         # Set origin to habe no inverted y-axis.
         # Give extend to have realistic subscription at the axis.
@@ -234,9 +239,9 @@ class Fractal:
             ax.add_patch(self.rectangle)
         
         # Init Slider
-        slider_ax = self.fig.add_axes([0.06, 0.1, 0.02, 0.8])
+        slider_ax = self.fig.add_axes([0.08, 0.1, 0.02, 0.79])
         self.slider = Slider(ax=slider_ax,
-            label="Pixel density in log scale", valmin=0.1, valmax=3.5, 
+            label="Pixel densit\nin log scale", valmin=0.1, valmax=3.5, 
             valinit=np.log10(self.density), orientation="vertical")
         self.slider.on_changed(self.slider_update)
 
@@ -247,10 +252,12 @@ class Fractal:
 
 # In[5]
 
-    def color_newton(self, grid):
+    def color_newton(self):
         """
         Calculates and plots the fractal structure on the grid.
         """
+        grid = np.meshgrid(np.linspace(*self.lims[-1, :, 0], self.density),
+                           np.linspace(*self.lims[-1, :, 1], self.density))
         roots, root_hue, iter_light = newton_approximation(self.func,
                         self.diff, grid, self.max_iteration, self.tolerance)
         self.set_roots(roots)
@@ -288,13 +295,12 @@ class Fractal:
                 self.recalculate = True
                 self.update()
         elif event.key == "r":  # reset
-            self.lims = np.array([[[-1, -1], [1, 1]]])
+            self.set_lims()
             self.recalculate = True
             self.update()
         elif event.key == "o":  # Zoom out
             center = np.sum(self.lims[-1], axis=0)/2
-            self.lims = np.append(
-                self.lims, [2*(self.lims[-1]-center)+center], axis=0)
+            self.set_lims([2*(self.lims[-1]-center)+center])
             self.recalculate = True
             self.update()
         elif event.key == "t": # Toggle infobox
@@ -335,8 +341,7 @@ class Fractal:
 
             val2 = np.array([event_3.xdata, event_3.ydata])
             if None not in np.array([val1,val2]) and not (val1-val2==0).any():
-                self.lims = np.append(
-                    self.lims, [np.sort([val1, val2], axis=0)], axis=0)
+                self.set_lims([np.sort([val1, val2], axis=0)])
                 self.recalculate = True
                 self.update()
             else:
@@ -352,14 +357,13 @@ class Fractal:
         position = np.array([event.xdata, event.ydata])
         if np.any(position == None):
             position = np.sum(self.lims[-1], axis=0)/2
-        self.lims = np.append(self.lims,
-            [(1-0.05*event.step)*(self.lims[-1]-position)+position], axis=0)
+        self.set_lims([(1-0.05*event.step)*(self.lims[-1]-position)+position])
         self.recalculate = True
         self.update()
 
     def translation(self, event):
         value1 = np.array([event.xdata, event.ydata])
-        self.lims = np.append(self.lims, [self.lims[-1]], axis=0)
+        self.set_lims([self.lims[-1]])
 
         def motion_notify(event_2):
             """
@@ -405,6 +409,5 @@ class Fractal:
         """
         still_open = self.fig.canvas.isVisible()
         return still_open
-
-    def kino(self):
-        pass
+        
+    

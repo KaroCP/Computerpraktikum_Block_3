@@ -39,6 +39,24 @@ Press 'r' to reset the zoom.
 
 # In[3] 
 
+# import numpy as np
+# import time
+# func = lambda z:z**3-1
+# diff = lambda z:3*z**2
+# label = "x^3-1"
+# frac = Fractal(func,diff,label)
+# start_time = time.perf_counter()
+# start_lims = np.array([[[-1, -1], [1, 1]]])
+# pointer = [-1/np.sqrt(3),0]
+# time.sleep(1.5)
+# while frac.isVisible():
+#     time_now = time.perf_counter()-start_time
+#     print(time_now)
+#     frac.set_lims((10/time_now)*(start_lims-pointer)+pointer)
+#     frac.recalculate = True
+#     frac.update
+#     time.sleep(20)
+
 
 # In[10]
 

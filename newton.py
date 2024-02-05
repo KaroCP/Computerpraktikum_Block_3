@@ -7,10 +7,8 @@ Newton approximation form Karo.
 # In[1]
 
 import numpy as np
-import time
-
 import warnings
-warnings.filterwarnings("ignore")
+warnings.simplefilter("ignore")
 
 
 # In[2]
@@ -55,8 +53,6 @@ def newton_approximation(func, diff, grid, max_iterations, border):
     iterations : np.ndarray of int with shape (dim,dim)
         At each entry the number of iterations until the recursion terminates.
     """
-    start_time = time.perf_counter()
-    
     # Init iteration variables
     calculate_step = np.vectorize(lambda point: catch(
                         lambda x:func(point)/x, diff(point), handle=np.Inf))
@@ -77,9 +73,6 @@ def newton_approximation(func, diff, grid, max_iterations, border):
         if done.all(): break
     value[np.logical_not(done)] = np.Inf
     
-    mid_time = time.perf_counter()
-    print("Calculated results after", mid_time-start_time, "seconds.")
-    
     # Calculate the set of roots
     data = value[value!=np.Inf]
     roots_set = []
@@ -95,7 +88,5 @@ def newton_approximation(func, diff, grid, max_iterations, border):
                          for j in range(dim)] for i in range(dim)])
     roots = np.append(roots, np.Inf)
     
-    end_time = time.perf_counter()
-    print("Runntime:",end_time-start_time)
     return roots, indexes, iterations
     
