@@ -35,5 +35,5 @@ please input your function that mapps x to some complex value, ie for example x^
         except:
             print("please enter parsable expression")
 
-#print(choose_any_fractal_function())
+print(choose_any_fractal_function())
     
