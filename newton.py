@@ -13,9 +13,15 @@ warnings.simplefilter("ignore")
 
 # In[2]
 
-def catch(func, *args, handle=None):
+def catch(func, *args, handle=None, print_error=False):
+    """
+    Debug function. It trys to return func from the args. If an error occurs
+    it returns handle instead.
+    It additionally prints the error if print_error is True.
+    """
     try: return func(*args)
-    except Exception as e: 
+    except Exception as e:
+        if print_error: print(e)
         return handle
     
 
