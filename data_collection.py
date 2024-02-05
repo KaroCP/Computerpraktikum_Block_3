@@ -8,32 +8,37 @@ Now a collection for data.
 # In[1]
 
 import numpy as np
+from sympy.parsing.sympy_parser import parse_expr
+import sympy
 
 
 # In[2]
 
-def get_natural(string):
-    print(string)
+def get_natural(max_n=np.Inf):
     while True:
         number = input(" > ")
         try: 
             number = int(number)
-            if number >= 1: 
-                break
+            if number >= 1 and number <= max_n: 
+                return number
         except: pass
-    return number
-        
+
+def get_bool():
+    while True:
+        string = input(" > ")
+        if string == "True" or string == "False":
+            return string == "True"
+
 
 # In[3]
 
 def chose_fractal_x_times_n():
     print("""
-You can assemble the plot information by yourself.
 To simplify we consider functions like x^n-1.
 They usually induce a fractal structure""")
-    n = get_natural("""==================================================
+    print("""==================================================
 Please chose the power n.""")
-    print("Please wait now. Your fractal will be assembled.\n ")
+    n = get_natural()
     f = lambda z:z**n-1
     diff = lambda z:n*z**(n-1)
     label = "x^{}-1".format(n)
@@ -45,6 +50,11 @@ Please chose the power n.""")
 f1_func = lambda z:np.power(z,3)-1
 f1_diff = lambda z:3*np.power(z,2)
 f1_label = "x^3-1"
+
+f15_func = lambda z:np.power(z,3)-1
+f15_diff = lambda z:3*np.power(z,2)
+f15_pointer = [-np.pi/2,0]
+f15_label = "x^3-1 with animation still #TOOD" 
 
 f2_func = lambda z:np.power(z,3)-z
 f2_diff = lambda z:3*np.power(z,2)-1
@@ -99,6 +109,7 @@ f9_diff = lambda z:-np.exp(-z)
 f9_label = "e^(-x)-1"
 
 data_set = [[ f1_func,  f1_diff,  f1_label],
+            [f15_func, f15_diff, f15_label, f15_pointer],
             [ f2_func,  f2_diff,  f2_label],
             [f14_func, f14_diff, f14_label],
             [f10_func, f10_diff, f10_label],
@@ -113,24 +124,50 @@ data_set = [[ f1_func,  f1_diff,  f1_label],
             [ f8_func,  f8_diff,  f8_label],
             [ f3_func,  f3_diff,  f3_label]]
 
-# In[5]
 
 def choose_fractal_from_data():
     print("""
-You can assemble the plot information by yourself.
-To simplify we consider given functions see data_collection.
-They are just test.""")
-    n = get_natural("""==================================================
+==================================================
 Please chose the number of data. There are
 """+"\n".join([str(i+1)+") "+data_set[i][2] for i in range(len(data_set))]))
-    print("""
-Please wait now. Your fractal will be assembled.""")
+    n = get_natural(len(data_set)-1)
     return data_set[n-1]
         
 
+# In[5]
 
-# In[10]
+def calculate_derivative(function):
+    return sympy.lambdify(sympy.symbols("z"),sympy.diff(parse_expr(
+        str(function(sympy.symbols("z"))), transformations='all'), "z"))
 
-"x^5-3x^2"
 
-# In[100]
+def choose_any_fractal_function():
+    print("""
+Please input your function that maps z to some complex value, i.e. for example z^3-1""")
+    temporary_bool = True
+    while temporary_bool: 
+        input1 = input(" > ")
+        try:
+            f = lambda z:eval(input1.replace("^", "**"))
+            diff = calculate_derivative(f)
+            label = input1
+            temporary_bool = False
+            return f,diff,label
+        except: pass
+    
+
+# In[6]
+
+def get_fractal():
+    print("""
+You can assemble the plot information by yourself.
+First you can chose whether you like to look at one
+of the provided examples or enter a function by yourself.
+Enter 'True' if you want to enter a function by yourself
+and enter 'False' if you want to use one of the provided examples.""")
+    fix_data = get_bool()
+    if fix_data: data = choose_any_fractal_function()
+    else: data = choose_fractal_from_data()
+    print("Please wait now. Your fractal will be assembled.\n ")
+    return data
+    
