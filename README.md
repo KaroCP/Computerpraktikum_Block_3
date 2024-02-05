@@ -1,28 +1,22 @@
 # Computerpraktikum_Block_3
 bei Herr Göddeke
 # Ausführen
-(Für Karos Part): Führe die main Datei aus und folge den Anweisungen in der Konsole. <br>
-Hinweis: Für Anzahl an Punkten "density" höchstens 200 angeben, sonst dauert das echt lange. <br>
-Manuelle Schalter im Programm (noch verläufig, noch nicht sicher, wie es langfristig gelöst werden soll.):
-- "fix_data" in main: Wenn True wird aus einer gegebenden Menge an Beispiel_funktionen die Funktion gewählt; Wenn False wird auf das bisherige x^n-1 Polynom zurückgegriffen.
-  (Beides fragt in der Konsole noch eine Zahl ab, welche Funktion aus der Beispielklasse verwendet werden soll.)
+Führe die main Datei aus und folge den Anweisungen in der Konsole. <br>
 - AUSFÜHREN der PLOTS in SEPERATEM FENSTER : Go to Tools >> Preferences >> IPython console >> Graphics >> Backend:Inline, change "Inline" to "Automatic", click "OK"
 # Aufgaben
 Die AUFGABENSTELLUNG und ANWEISUNGEN Folder beinhaltet die Aufgabenstellung und weitere Hilfen zum Thema. Lies das Thema "Fraktale", das ist unser Thema. Die Einzelaufgaben sind:
 - Newtonverfahren implementieren (Valentino)
 - Beispiele suchen (Karo)
-- Laufzeit verbessern, Insbesondere Zeiten vergleichen, Konvergenzordnung vergleichen (Momo)
+- Laufzeit verbessern, Insbesondere Zeiten vergleichen, Konvergenzordnung vergleichen (Valentino)
+- Newton -approximation in schnellerem Programm implementieren (Momo)
 - Interaktion implementieren (Karo)
-- Ableitung symbolisch berechnen (Momo?)
-- Andere Berechnungsverfahren implementieren (Valentino)
+- Ableitung symbolisch berechnen (Momo)
 ## (aktuelle) TODOs:
 - Präsentation machen
 - Bericht für das Projekt schreiben. https://www.overleaf.com/project/65bfa1bcc677b426a3b87741
 - Zeitmessung: Wie hängt die Berechnungszeit von der density ab. <br>
   An sich erstmal für den Bericht. Ich fände es aber auch cool, wenn man eine Abschätzung für Berechnungsdauer printen lassen könnte (abhängig von der letzten Berechnungsdauer und der gewünschten Neuberechnung).
-- Symbolische Berechnung der Ableitung einfügen. Und (über sympy) Einlesen einer beliebigen Funktion in der Konsole.
-- Was machen wir mit dem manuellen Toggler "fix_data"?
-- Automatischen Zoom (=Animation?) machen
+- überlegung cooler Beispielfunktionen
 ## Weitere Ideen
 - Parameterabhängige Funktionen als Beispiele machen
 - Adaptive Max_Iteration (großes Max Iterarion und durch np.max teilen)
@@ -32,20 +26,20 @@ Die AUFGABENSTELLUNG und ANWEISUNGEN Folder beinhaltet die Aufgabenstellung und 
 Hier wird klargestellt wer was tut. Schreibt hier bitte immer rein, was ihr tut und am besten wie jeder euer Programmteile mit den anderen zu komunizieren hat. (Z.B. wenn's ein py-modul werden soll, das einfach erwähnen und wie es heißt...). Alle Dateinamen an denen ihr arbeitet, sollten in einer der folgenden Sektionen erwähnt werden.
 
 ## Valentino
-### newton
-Die Funktion newton_approx wird von color_newton in functions aufgerufen.
+### newton_von_Valntino
+### newton_von_Valentino_hoffentlich_richtig
 
 ## Karo
 Hier kurze Beschreibung der Module. Für genauere Informationen siehe Python Documentation.
 ### main
 Erstellt mithilfe von data_collection importierten Funktionen ein Fractal und gibt den Nutzer Informationen, wie mit dem Plot interagiert werden kann.
-### functions
+### fractal
 Definiert die Klasse Fractal, die Daten wie die genutze Funktion oder das Iterationslevel speichert, den Plot erstellt und die Möglichkeit der Interaktion mit dem Plot definiert.<br>
 Die Funktion (genauso wie ihre Ableitung) werden als Lambdafunkktionen in einer komplexen Zahl eingegeben (z.B. f = lambda z:z**3-1).<br>
-Die Klasse ruft zur Berechnung des Plots - je nach Einstellung - die Funktion newton_approx in newton_von Valentino oder newton_with_matrices in newton_works auf.
+Die Klasse ruft zur Berechnung des Plots - je nach Einstellung - die Funktion newton_approx in newton oder ? in ?  von Momo auf.
 ### data_collection
-Sammelt und erstellt mögliche Daten für Fraktale. Und definiert Funktionen debug-Funktionen, durch die der Nutzer - mithilfe der Konsole - einen Datensatz auswählen kann.
-### newton_works
+Sammelt und erstellt mögliche Daten für Fraktale. Und definiert debug-Funktionen, durch die der Nutzer - mithilfe der Konsole - einen Datensatz auswählen/definieren kann.
+### newton
 Eine mögliche Implementation für den Newton Algorithmus.
 
 ## Momo
