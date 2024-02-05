@@ -16,8 +16,7 @@ from data_collection import get_fractal
 print("Welcome to our project")
 frac = Fractal(*get_fractal())
 frac.fast = False #TODO
-frac.recalculate = True
-frac.update()
+frac.update(True)
 # Funfact: the "frac = " part ist necessary for the interaction.
 
 print("""Ready.

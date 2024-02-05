@@ -27,47 +27,82 @@ from newton import newton_approximation
 class Fractal:
     """
     Class of an interative Interface which plots a fractal.
-
+    
     Attributes
     ----------
     fig : matplotlib.figure.Figure
         Figure form the interface.
-    func : function in one variable
-        The function which generates the fractal. 
-    diff : function in one variable
+    func : function
+        Function from C to C, which will be used to generate the fractal.
+    diff : function
         The derivative of func. 
-    roots : np.ndarray
-        Array of the complex roots of func.
-        With Inf as additional entry for divergence.
-    colors : np.ndarray
-        Array colors. For each root one color.
     label : str
-        Name or maping rule of func.
-    density : int
-        number of pixel in each row and colum.
+        The mapping rule of func or some other symbol for it.
     max_iterations : int
         The number if the maximal iterations in the newton approximation.
         The default is 128.
     tolerance : float
-        The tolerance in the newton approximation. The default is 0.01.
-    lims : array of form [[x_min, y_min],[x_max, y_max]]
+        The tolerance in the newton approximation.
+        The default is 10e-7.
+    density : int
+        number of pixel in each row and each colum.
+        The default is 64.
+    start_lims : np.ndarray of form [[x_min, y_min], [x_max, y_max]]
         Contains the information, in which area in the compley plane 
-        the function is plotted.
-    plot_data : array with shape (density,density,3)
-        Contains the color data at each point so it has not to be 
-        recalculated each time
-
+        the first plot will be generated.
+        The default is [[-1, -1], [1, 1]].
+    start_time : float
+        The value when the program is started to calculate later,
+        how long the program is still running.
+    pointer : np.ndarray of shape (2,) or None
+        If not None it gives the point at which the automatic zoom will focus.
+        The default is None.
+    fast : bool
+        If True the fractal will be calculated by the faster algorighm in ##
+        #TODO wie heißt die Sprache?
+        If False the python intern newton approximation will be used.
+        The default ist True.
+    roots : np.ndarray of shape (n+1,)
+        Array of the n calculated complex roots of func.
+        With Inf as additional entry for divergence.
+    colors : np.ndarray of floats with shape (n+1,)
+        Array of the hue value of colors. For each root one color.
+    lims : list
+        All Elements has to have the form [[x_min, y_min],[x_max, y_max]].
+        Contains all previous limits as information for zooming backwards.
+        The last entry contains the current limits.
+    plot_data : array of shape (density, density, 3)
+        Contains the plot data so it has not to be recalculated each time.
+    zoom : bool
+        If True the user can zoom by drawing a rectangle.
+        If False the user can zoom with the mousewheel and shift the plot with
+        drag and drop. Only reasonable if the calculation is fast.
+        The default is True.
+    rectangle : matplotlib.patches.Rectangle or None
+        If not None, the rectangle which is drawn to zoom for the first zoom
+        option.
+    text : bool
+        If True an infobox is plotted above the fractal.
+        The default is False.
+    
     Methods
     -------
-    calculate_diff()
-        Calculates the derivative of func symbolc
-    calculate_zeroset()
-        Calculates the derivative of func symbolc
-    update()
-        Method to update the plot with limits.
-    color_newton(grid)
-        Calculates at each point the resulting color 
-        by using the newton approximation.
+    set_roots(roots)
+        Replaces roots and colors with new roots and respective colors.
+    set_lims(lims)
+        Adds lims to the list of all previous limits.
+    get_info_str()
+        Returns a string containig the information for the infonox.
+    slider_update(value)
+        The update function for the slider.
+    update(recalculate=True)
+        Method to update the plot with new settings.
+        If rerecalculate is True the plot data will be recalculated.
+        Otherwise tho old plot data will be used.
+    color_newton()
+        Calculates for each point in the grid depending on the limits and the 
+        density the resulting color by using the in python coded newton
+        approximation.
     switch_zoom(event)
         Individual functions with respective queries for specific inputs for 
         interaction with the keyboard.        
@@ -75,7 +110,7 @@ class Fractal:
         First and standard zoom option. Zoom by drawing a rectangle.
     zoom2(event)
         Second method for zooming. 
-        Zoom with dhe mouse wheel in and out of the plot.
+        Zoom with the mouse wheel in and out of the plot.
     translation(event)
         Method for drag and drop. 
         Only possible when using the second zoom option and fast calculation.
@@ -83,55 +118,32 @@ class Fractal:
         Tests wether the figure is stil open (-> True) 
         or was closed (-> False).
     kino()
-        Placeholder for animated zoom. 
+        Function for the animated zoom. If there is a pointer the plot will 
+        be zoomed in automaticly.
     """
 
     def __init__(self, func, diff=None, label=None, pointer=None, 
-                 max_iter=128, dens=64, tol=10e-7):
-        """
-        Parameters
-        ----------
-        func : function
-            Function from C to C which will be used to create the fractal.
-            Not anymore: 1D array with shape (2,2). 
-            In fact: func= [f1(x1,x2), f2(x1,x2)].
-        f_diff : 2D array with shape (2,2), optional
-            With functions as entries. The default is None.
-            [df1/dx1 df1/dx1
-             df2/dx1 df2/dx2]
-        label : str, optional
-            The mapping rule of f or some other symbol for it.
-        dens : int
-            number of pixel in each row and colum.
-        max_iter : int
-            The number if the maximal iterations in the newton approximation.
-            The default is 200.
-        tol : float
-            The tolerance in the newton approximation. The default is 0.01.
-        pointer : arry of form [x,y].
-            For the animated zoom. at which direction the zoom will be.
-            Still a bit TODO!
-        """
-
+                 density=64, max_iteration=128, tolerance=10e-7):
         # Consatants:
-        self.func = func
-        self.diff = diff
-        self.label = label
-
-        self.max_iteration = max_iter
-        self.tolerance = tol
-        self.density = dens
-
         self.fig = plt.figure()  # This creates canvas
         self.fig.subplots(1)
         self.fig.subplots_adjust(left=0.15) # make space for the slider
 
-        self.pointer = pointer
-        self.start_lims = np.array([[[-1, -1], [1, 1]]])
+        self.func = func
+        self.diff = diff
+        self.label = label
+
+        self.max_iteration = max_iteration
+        self.tolerance = tolerance
+        self.density = density
+
+        self.start_lims = np.array([[-1, -1], [1, 1]])
         self.start_time = time.perf_counter()
+        self.pointer = pointer
+
 
         # Variables:
-        self.set_fast()
+        self.fast = True
         self.set_roots()
         self.set_lims()
         self.plot_data = np.zeros((self.density, self.density, 3))
@@ -143,20 +155,25 @@ class Fractal:
         self.bindingidzoom = self.fig.canvas.mpl_connect('button_press_event',
                                                          self.zoom1)
         self.rectangle = None
-        self.recalculate = True
         self.text = False
 
-        self.update()
+
+        self.update(True)
 
 
 # In[3]
-
-
-    def set_fast(self, fast=True):
-        self.fast = fast
-    
-    
+ 
     def set_roots(self, roots=None):
+        """
+        Replaces roots and colors with new roots and respective colors.
+        
+        Parameters
+        ----------
+        roots : array-like of shape (n+1), optional
+            New calculated roots of func with Inf as additional entry for 
+            divergence.            
+            The default is None.
+        """
         if np.any(roots == None):
             self.roots = None
             self.colors = None
@@ -166,9 +183,28 @@ class Fractal:
     
 
     def set_lims(self, lims=None):
+        """
+            set_lims(lims)
+        Adds lims to the list of all previous limits.
+    get_info_str()
+        Returns a string containig the information for the infonox.
+    slider_update(value)
+        The update function for the slider.
+
+
+        Parameters
+        ----------
+        lims : TYPE, optional
+            DESCRIPTION. The default is None.
+
+        Returns
+        -------
+        None.
+
+        """
         if np.any(lims == None):
-            self.lims = np.array([[[-1, -1], [1, 1]]])
-        else: self.lims = np.append(self.lims, lims, axis=0)
+            self.lims = [self.start_lims]
+        else: self.lims.append(np.array(lims))
     
 
     def get_info_str(self):
@@ -185,17 +221,16 @@ class Fractal:
 
     def slider_update(self,val):
         self.density = int(np.power(10,self.slider.val))
-        self.recalculate = True
-        self.update
+        self.update(True)
 
 
 # In[4]
 
-    def update(self):
+    def update(self,recalculate=False):
         """
         Method to update the plot with a new grid.
         
-        If self.recalculate is True new plot data will be calculated. 
+        If recalculate is True new plot data will be calculated. 
             Otherwise the old plot data will be used.
         If self.text is True a Infobox will be printed on the plot.
         If one is zooming with zoom option 1 a rectangle will be drawn.
@@ -205,14 +240,13 @@ class Fractal:
         ax = self.fig.add_subplot()  # create new subplot
 
         # renew plots
-        if self.recalculate:
+        if recalculate:
             start_time = time.perf_counter()
             if self.fast: 
                 self.plot_data = np.zeros((self.density, self.density, 3))
                 # self.plot_data = "momos Daten" #TODO
             else: self.plot_data = self.color_newton()
             self.calulation_time = time.perf_counter()-start_time
-            self.recalculate = False
         # Set origin to habe no inverted y-axis.
         # Give extend to have realistic subscription at the axis.
         ax.imshow(self.plot_data, origin="lower",
@@ -241,10 +275,10 @@ class Fractal:
 
     def color_newton(self):
         """
-        Calculates and plots the fractal structure on the grid.
+        Calculates the fractal structure on the grid.
         """
-        grid = np.meshgrid(np.linspace(*self.lims[-1, :, 0], self.density),
-                           np.linspace(*self.lims[-1, :, 1], self.density))
+        grid = np.meshgrid(np.linspace(*self.lims[-1][:,0], self.density),
+                           np.linspace(*self.lims[-1][:,1], self.density))
         roots, root_hue, iter_light = newton_approximation(self.func,
                         self.diff, grid, self.max_iteration, self.tolerance)
         self.set_roots(roots)
@@ -252,15 +286,32 @@ class Fractal:
         iter_light[root_hue == len(self.roots)-1] = 1
         root_hue = self.colors[root_hue.astype(int)]
 
-        return np.array(np.vectorize(
-            colorsys.hls_to_rgb)(root_hue, iter_light, 1)).transpose(1,2,0)
+        return np.array(np.vectorize(colorsys.hls_to_rgb)(
+                        root_hue, iter_light, 1)).transpose(1,2,0)
 
 
 # In[6]
 
 
     def switch_zoom(self, event):
-        if event.key == "z":  # switch between the two zoom options
+        """
+        Method to interact with the keyboard.
+        The programme queries in individual if loops whether certain keys are 
+        pressed and, if so, executes the corresponding operation.
+        
+        'z' is pressed: Switch bewteen the two zoom options.
+        'b' is pressed: Zoom back to the last zoom.
+        'o' is pressed: Zoom out the fix property of 2.
+        'r' is pressed: Reset the zoom to the first limits.
+        't' is pressed: Toggle the infobox.
+
+        Parameters
+        ----------
+        event : matplotlib.backend_bases.KeyEvent
+            Object which contains the information about the pressd keyboard 
+            key.
+        """
+        if event.key == "z": # switch between the two zoom options
             self.zoom = not self.zoom
             if self.zoom:
                 plt.disconnect(self.bindingidtranslation)
@@ -278,18 +329,15 @@ class Fractal:
             if len(self.lims) == 1:
                 print("No zoom state before initial state.")
             else:
-                self.lims = np.delete(self.lims, -1, axis=0)
-                self.recalculate = True
-                self.update()
-        elif event.key == "r":  # reset
-            self.set_lims()
-            self.recalculate = True
-            self.update()
-        elif event.key == "o":  # Zoom out
+                self.lims.pop(-1)
+                self.update(True)
+        elif event.key == "o": # Zoom out
             center = np.sum(self.lims[-1], axis=0)/2
-            self.set_lims([2*(self.lims[-1]-center)+center])
-            self.recalculate = True
-            self.update()
+            self.set_lims(2*(self.lims[-1]-center)+center)
+            self.update(True)
+        elif event.key == "r": # reset
+            self.set_lims()
+            self.update(True)
         elif event.key == "t": # Toggle infobox
             self.text = not self.text
             self.update()
@@ -299,6 +347,15 @@ class Fractal:
 
 
     def zoom1(self, event):
+        """
+        Method for zooming by drawing a rectangle.
+
+        Parameters
+        ----------
+        event : matplotlib.backend_bases.PickEvent
+            Object which contains the information of the coordinates of 
+            the mouse pointer.
+        """
         val1 = np.array([event.xdata, event.ydata])
 
         def motion_notify(event_2):
@@ -321,6 +378,15 @@ class Fractal:
             'motion_notify_event', motion_notify)
 
         def button_release(event_3):
+            """
+            Ends the drag-and-drop action.
+
+            Parameters
+            ----------
+            event_3 : matplotlib.backend_bases.MouseEvent
+                Object which contains the information of the coordinates of 
+                the mouse pointer.
+            """
             plt.disconnect(moving_id)
             plt.disconnect(self.bindingidbuttonrelease)
             self.bindingidbuttonrelease = None
@@ -328,9 +394,8 @@ class Fractal:
 
             val2 = np.array([event_3.xdata, event_3.ydata])
             if None not in np.array([val1,val2]) and not (val1-val2==0).any():
-                self.set_lims([np.sort([val1, val2], axis=0)])
-                self.recalculate = True
-                self.update()
+                self.set_lims(np.sort([val1, val2], axis=0))
+                self.update(True)
             else:
                 self.update()
         self.bindingidbuttonrelease = self.fig.canvas.mpl_connect(
@@ -341,21 +406,37 @@ class Fractal:
 
 
     def zoom2(self, event):
+        """
+        Module to zoom in and out of the plot.
+
+        Parameters
+        ----------
+        event : matplotlib.backend_bases.MouseEvent
+            Object that contains the information about how far scrolling has 
+            taken place.
+        """
         position = np.array([event.xdata, event.ydata])
         if np.any(position == None):
             position = np.sum(self.lims[-1], axis=0)/2
-        self.set_lims([(1-0.05*event.step)*(self.lims[-1]-position)+position])
-        self.recalculate = True
-        self.update()
+        self.set_lims((1-0.05*event.step)*(self.lims[-1]-position)+position)
+        self.update(True)
 
     def translation(self, event):
+        """
+        Method for shofting the plot by drag and drop.
+
+        Parameters
+        ----------
+        event : matplotlib.backend_bases.PickEvent
+            Object which contains the information of the coordinates of 
+            the mouse pointer.
+        """
         value1 = np.array([event.xdata, event.ydata])
-        self.set_lims([self.lims[-1]])
+        self.set_lims(self.lims[-1])
 
         def motion_notify(event_2):
             """
-            Function for zoom to animate the position of the mouse 
-            pointer and the resulting image.
+            Function for translation to plot in the new limits.
 
             Parameters
             ----------
@@ -366,13 +447,21 @@ class Fractal:
             value2 = np.array([event_2.xdata, event_2.ydata])
             if np.array(value2 != None).all():
                 self.lims[-1] = self.lims[-1] + value1-value2
-                self.recalculate = True
-                self.update()
+                self.update(True)
 
         moving_id = self.fig.canvas.mpl_connect(
             'motion_notify_event', motion_notify)
 
         def button_release(event_3):
+            """
+            Ends the drag-and-drop action.
+
+            Parameters
+            ----------
+            event_3 : matplotlib.backend_bases.MouseEvent
+                Standard variable for functions with mpl_conect. 
+                Not needed in this case.
+            """
             plt.disconnect(moving_id)
             plt.disconnect(self.bindingidbuttonrelease)
             self.bindingidbuttonrelease = None
@@ -402,7 +491,6 @@ class Fractal:
         # time.sleep(self.calulation_time*1.5)
         self.set_lims(1/(time.perf_counter()-self.start_time)*(self.start_lims
                                                 -self.pointer)+self.pointer)
-        self.recalculate = True
-        self.update()
+        self.update(True)
         
     
