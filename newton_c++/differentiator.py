@@ -32,7 +32,8 @@ please input your function that mapps x to some complex value, ie for example x^
             label = input1
             return f,diff,label
             temporary_bool = False
-        except:
+        except Exception as e:
+            print(e)
             print("please enter parsable expression")
 
 print(choose_any_fractal_function())

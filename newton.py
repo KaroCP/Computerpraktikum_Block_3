@@ -21,7 +21,7 @@ def catch(func, *args, handle=None):
 
 # In[3]
 
-def newton_approximation(func, diff, grid, max_iterations, border):
+def newton_approximation(func, diff, grid, max_iterations, tolerance):
     """
     Newton approximation of roots for complex functions.
     Calculating the resluts simultanuously by using matrixmultiplication.
@@ -37,7 +37,7 @@ def newton_approximation(func, diff, grid, max_iterations, border):
     max-iterations: int
         Number of iterations before the algorithm terminates. 
         If it is exceeded, the function expects divergence.
-    border: float
+    tolerance: float
         Required distance for the calculated root to the 
         actual root in order to terminate.
 
@@ -68,7 +68,7 @@ def newton_approximation(func, diff, grid, max_iterations, border):
         value = value_old-np.array([[0 if done_old[i,j] 
                                      else calculate_step(value_old[i,j])
                                      for j in range(dim)] for i in range(dim)])
-        done = np.logical_or(value==np.Inf, np.abs(value-value_old)<border)
+        done = np.logical_or(value==np.Inf, np.abs(value-value_old)<tolerance)
         iterations[np.logical_and(done,np.logical_not(done_old))] = i+1
         if done.all(): break
     value[np.logical_not(done)] = np.Inf
@@ -77,7 +77,7 @@ def newton_approximation(func, diff, grid, max_iterations, border):
     data = value[value!=np.Inf]
     roots_set = []
     while len(data)>0:
-        mask = np.isclose(data, data[0], atol=10*border)
+        mask = np.isclose(data, data[0], atol=10*tolerance)
         roots_set.append(data[mask])
         data = data[np.logical_not(mask)]
     roots = np.sort_complex([np.average(r_set) for r_set in roots_set])

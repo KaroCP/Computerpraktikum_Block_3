@@ -53,8 +53,8 @@ f1_label = "x^3-1"
 
 f15_func = lambda z:np.power(z,3)-1
 f15_diff = lambda z:3*np.power(z,2)
-f15_pointer = [-np.pi/2,0]
-f15_label = "x^3-1 with animation still #TOOD" 
+f15_pointer = [-np.pi/np.sqrt(11),0]
+f15_label = "x^3-1 with animation; still #TODO" 
 
 f2_func = lambda z:np.power(z,3)-z
 f2_diff = lambda z:3*np.power(z,2)-1
@@ -168,6 +168,6 @@ and enter 'False' if you want to use one of the provided examples.""")
     fix_data = get_bool()
     if fix_data: data = choose_any_fractal_function()
     else: data = choose_fractal_from_data()
-    print("Please wait now. Your fractal will be assembled.\n ")
+    print("\nPlease wait now. Your fractal will be assembled.")
     return data
     

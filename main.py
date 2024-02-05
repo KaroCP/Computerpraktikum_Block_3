@@ -15,7 +15,7 @@ from data_collection import get_fractal
 
 print("Welcome to our project")
 frac = Fractal(*get_fractal())
-frac.set_fast(False)
+frac.fast = False #TODO
 frac.recalculate = True
 frac.update()
 # Funfact: the "frac = " part ist necessary for the interaction.
@@ -36,7 +36,7 @@ Press 'o' to zoome (a fix property) out.
 Press 'r' to reset the zoom.
 """)
 
-if frac.pointer!=None:
-    while frac.isVisible():
-        frac.kino()
+# if frac.pointer!=None:
+#     while frac.isVisible():
+#         frac.kino()
     

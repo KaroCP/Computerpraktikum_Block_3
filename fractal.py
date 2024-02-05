@@ -124,7 +124,7 @@ class Fractal:
 
         self.fig = plt.figure()  # This creates canvas
         self.fig.subplots(1)
-        self.fig.subplots_adjust(left=0.15)
+        self.fig.subplots_adjust(left=0.15) # make space for the slider
 
         self.pointer = pointer
         self.start_lims = np.array([[[-1, -1], [1, 1]]])
@@ -207,7 +207,9 @@ class Fractal:
         # renew plots
         if self.recalculate:
             start_time = time.perf_counter()
-            if self.fast: self.plot_data = np.zeros((self.density, self.density, 3)) # momos Daten
+            if self.fast: 
+                self.plot_data = np.zeros((self.density, self.density, 3))
+                # self.plot_data = "momos Daten" #TODO
             else: self.plot_data = self.color_newton()
             self.calulation_time = time.perf_counter()-start_time
             self.recalculate = False
