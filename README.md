@@ -6,6 +6,7 @@ Hinweis: Für Anzahl an Punkten "density" höchstens 200 angeben, sonst dauert d
 Manuelle Schalter im Programm (noch verläufig, noch nicht sicher, wie es langfristig gelöst werden soll.):
 - "fix_data" in main: Wenn True wird aus einer gegebenden Menge an Beispiel_funktionen die Funktion gewählt; Wenn False wird auf das bisherige x^n-1 Polynom zurückgegriffen.
   (Beides fragt in der Konsole noch eine Zahl ab, welche Funktion aus der Beispielklasse verwendet werden soll.)
+- AUSFÜHREN der PLOTS in SEPERATEM FENSTER : Go to Tools >> Preferences >> IPython console >> Graphics >> Backend:Inline, change "Inline" to "Automatic", click "OK"
 # Aufgaben
 Die AUFGABENSTELLUNG und ANWEISUNGEN Folder beinhaltet die Aufgabenstellung und weitere Hilfen zum Thema. Lies das Thema "Fraktale", das ist unser Thema. Die Einzelaufgaben sind:
 - Newtonverfahren implementieren (Valentino)
