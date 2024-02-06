@@ -1,0 +1,35 @@
+All these results are an average of 50 iterations and were made with the following specs:
+CPU: 12th Gen Intel(R) Core(TM) i7-12700K
+GPU: NVIDIA GeForce RTX 4070 Ti
+RAM: 2x16 GB, 4800 MHz DDR 5
+
+
+
+newton_approximation of z^3-1 with density = 30, max_iterations = 50, tolerance = 1e-06, needed on average 0.4156030959999771 seconds
+
+newton_approximation of z^3-1 with density = 50, max_iterations = 50, tolerance = 1e-06, needed on average 0.44944431999982043 seconds
+
+newton_approximation of z^3-1 with density = 80, max_iterations = 50, tolerance = 1e-06, needed on average 0.4826795200000197 seconds
+
+newton_approximation of z^3-1 with density = 100, max_iterations = 50, tolerance = 1e-06, needed on average 0.4963886620000267 seconds
+
+
+
+newton_approximation of z^7-z with density = 30, max_iterations = 50, tolerance = 1e-06, needed on average 0.7155007159999514 seconds
+
+newton_approximation of z^7-z with density = 50, max_iterations = 50, tolerance = 1e-06, needed on average 0.8242129380000551 seconds
+
+newton_approximation of z^7-z with density = 80, max_iterations = 50, tolerance = 1e-06, needed on average 0.8737672300000122 seconds
+
+newton_approximation of z^7-z with density = 100, max_iterations = 50, tolerance = 1e-06, needed on average 0.8981263399998716 seconds
+
+
+
+Setting up the fractal z^3-1 with density = 30 needed 0.20424569200004045 seconds
+
+Setting up the fractal z^3-1 with density = 50 needed 0.24313410000009752 seconds
+
+Setting up the fractal z^3-1 with density = 100 needed 0.4239969900001597 seconds
+
+
+Setting up the fractal z^7-z with density = 100 needed 0.34417967599991245 seconds
