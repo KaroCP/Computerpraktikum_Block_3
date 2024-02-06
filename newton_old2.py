@@ -1,10 +1,5 @@
 import numpy as np
 
-# An Karo: Um das mit deinem Programm aufzurufen, müsstest du erst newton_approx_with_grid benutzen und das Ergebnis davon
-# dann einmal durch sort_roots laufen lassen. Sort_roots gibt dir dann eine nxn-Matrix mit(2,.) Einträgen zurück. Erster Eintrag
-# ist der Index der Nullstelle vom Startpunkt [y,x] im Anfangsgrid, zweiter Eintrag ist die Anzahl an Iterationen.
-# Falls es mega lange braucht, versuch Zeile 119 auszukommentieren
-
 ''' TODO: für effizienteres Verfahren LGS J(x)*delta_x = -f(x) für delta_x lösen -> x = x+delta_x'''
 def newton_approx_old2(f, f_diff, start_point, max_iterations = 100, border = 10**(-5)):
     """
