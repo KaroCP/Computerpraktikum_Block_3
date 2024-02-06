@@ -55,11 +55,6 @@ class Fractal:
     pointer : np.ndarray of shape (2,) or None
         If not None it gives the point at which the automatic zoom will focus.
         The default is None.
-    fast : bool
-        If True the fractal will be calculated by the faster algorighm in ##
-        #TODO wie heißt die Sprache?
-        If False the python intern newton approximation will be used.
-        The default ist True.
     roots : np.ndarray of shape (n+1,)
         Array of the n calculated complex roots of func.
         With Inf as additional entry for divergence.
@@ -150,7 +145,6 @@ class Fractal:
         self.pointer = pointer
 
         # Variables:
-        self.fast = True
         self.set_roots()
         self.set_lims()
         self.plot_data = np.zeros((self.density, self.density, 3))
@@ -260,11 +254,7 @@ class Fractal:
         # renew plots
         if recalculate:
             start_time = time.perf_counter()
-            if self.fast:
-                self.plot_data = np.zeros((self.density, self.density, 3))
-                # self.plot_data = "momos Daten" #TODO
-            else:
-                self.plot_data = self.color_newton()
+            self.plot_data = self.color_newton()
             self.calulation_time = time.perf_counter()-start_time
         # Set origin to habe no inverted y-axis.
         # Give extend to have realistic subscription at the axis.

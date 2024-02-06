@@ -7,7 +7,7 @@ import sympy
 
 # function ist eine lambda function
 def ableitung (function):
-    return sympy.lambdify(sympy.symbols("z"),sympy.diff(parse_expr(str(function(sympy.symbols("z"))), transformations='all'), "z"))
+    return sympy.lambdify(sympy.symbols("z"),sympy.diff(parse_expr(str(function(sympy.symbols("z"))), transformations=['all']), "z"))
 
    
 # testresultat :
