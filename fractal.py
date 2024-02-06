@@ -7,8 +7,6 @@ That contains data like the function, which is used to construct the fractal,
 #!/usr/bin/env python
 # coding: utf-8
 
-# TODO inplement symbolic calculation of derivative.
-# TODO implement automatic zoom animation (pointer)
 # In[1]
 
 import numpy as np
@@ -27,7 +25,7 @@ from newton import newton_approximation
 class Fractal:
     """
     Class of an interative Interface which plots a fractal.
-    
+
     Attributes
     ----------
     fig : matplotlib.figure.Figure
@@ -84,7 +82,11 @@ class Fractal:
     text : bool
         If True an infobox is plotted above the fractal.
         The default is False.
-    
+    calulation_time : float
+        Calculation time of the last calculation for plot data.
+    slider : matplotlib.widgets.Slider
+        The slider on the plot for shanging the pixel density.
+
     Methods
     -------
     set_roots(roots)
@@ -133,7 +135,7 @@ class Fractal:
         # Consatants:
         self.fig = plt.figure()  # This creates canvas
         self.fig.subplots(1)
-        self.fig.subplots_adjust(left=0.15) # make space for the slider
+        self.fig.subplots_adjust(left=0.15)  # make space for the slider
 
         self.func = func
         self.diff = diff
@@ -146,7 +148,6 @@ class Fractal:
         self.start_lims = np.array([[-1, -1], [1, 1]])
         self.start_time = time.perf_counter()
         self.pointer = pointer
-
 
         # Variables:
         self.fast = True
@@ -163,16 +164,16 @@ class Fractal:
         self.rectangle = None
         self.text = False
 
-
         self.update(True)
 
 
 # In[3]
- 
+
+
     def set_roots(self, roots=None):
         """
         Replaces roots and colors with new roots and respective colors.
-        
+
         Parameters
         ----------
         roots : array-like of shape (n+1), optional
@@ -186,7 +187,6 @@ class Fractal:
         else:
             self.roots = np.array(roots)
             self.colors = np.linspace(0, 1, len(self.roots))
-    
 
     def set_lims(self, lims=None):
         """
@@ -202,8 +202,8 @@ class Fractal:
         """
         if np.any(lims == None):
             self.lims = [self.start_lims]
-        else: self.lims.append(np.array(lims))
-    
+        else:
+            self.lims.append(np.array(lims))
 
     def get_info_str(self):
         """
@@ -220,17 +220,16 @@ class Fractal:
             Infostring about the function and the plot.
         """
         textstr1 = '\n'.join(("The function is "+self.label,
-                        "and the fractal is ploted with {}*{} pixels.".format(
-                            self.density,self.density),
-                        "The {} roots with resp. color in hsl are:".format(
-                            len(self.roots)),""))
+                              "and the fractal is ploted with {}*{} pixels.".format(
+                                  self.density, self.density),
+                              "The {} roots with resp. color in hsl are:".format(
+                                  len(self.roots)-1), ""))
         textstr2 = '\n'.join([str(self.roots[i])+", " +
-                              str(int(255*self.colors[i])) 
+                              str(int(255*self.colors[i]))
                               for i in range(len(self.roots)-1)])
         return textstr1+textstr2
 
-
-    def slider_update(self,val):
+    def slider_update(self, val):
         """
         The update function for the slider.
 
@@ -239,16 +238,16 @@ class Fractal:
         val : numpy.float64
             Contains the information of the slider value.
         """
-        self.density = int(np.power(10,val))
+        self.density = int(np.power(10, val))
         self.update(True)
 
 
 # In[4]
 
-    def update(self,recalculate=False):
+    def update(self, recalculate=False):
         """
         Method to update the plot with a new grid.
-        
+
         If recalculate is True new plot data will be calculated. 
             Otherwise the old plot data will be used.
         If self.text is True a Infobox will be printed on the plot.
@@ -261,10 +260,11 @@ class Fractal:
         # renew plots
         if recalculate:
             start_time = time.perf_counter()
-            if self.fast: 
+            if self.fast:
                 self.plot_data = np.zeros((self.density, self.density, 3))
                 # self.plot_data = "momos Daten" #TODO
-            else: self.plot_data = self.color_newton()
+            else:
+                self.plot_data = self.color_newton()
             self.calulation_time = time.perf_counter()-start_time
         # Set origin to habe no inverted y-axis.
         # Give extend to have realistic subscription at the axis.
@@ -272,17 +272,17 @@ class Fractal:
                   extent=self.lims[-1].T.flatten())
         if self.text:
             to_text = plt.figtext(0.5, 0.95, self.get_info_str(), fontsize=6,
-                    bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.9))
+                                  bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.9))
             to_text.set_horizontalalignment("center")
             to_text.set_verticalalignment("top")
         if self.rectangle != None:
             ax.add_patch(self.rectangle)
-        
+
         # Init Slider
         slider_ax = self.fig.add_axes([0.08, 0.1, 0.02, 0.79])
         self.slider = Slider(ax=slider_ax,
-            label="Pixel densit\nin log scale", valmin=0.1, valmax=3.5, 
-            valinit=np.log10(self.density), orientation="vertical")
+                             label="Pixel densit\nin log scale", valmin=0.5, valmax=3.5,
+                             valinit=np.log10(self.density), orientation="vertical")
         self.slider.on_changed(self.slider_update)
 
         # draw
@@ -291,6 +291,7 @@ class Fractal:
 
 
 # In[5]
+
 
     def color_newton(self):
         """
@@ -301,28 +302,27 @@ class Fractal:
         np.ndarray of shape (self.density,self.density,3)
             The plot data depending on the current settings.
         """
-        grid = np.meshgrid(np.linspace(*self.lims[-1][:,0], self.density),
-                           np.linspace(*self.lims[-1][:,1], self.density))
+        grid = np.meshgrid(np.linspace(*self.lims[-1][:, 0], self.density),
+                           np.linspace(*self.lims[-1][:, 1], self.density))
         roots, root_hue, iter_light = newton_approximation(self.func,
-                        self.diff, grid, self.max_iteration, self.tolerance)
+                                                           self.diff, grid, self.max_iteration, self.tolerance)
         self.set_roots(roots)
         iter_light = np.array((7/8*iter_light/self.max_iteration+1/8))
         iter_light[root_hue == len(self.roots)-1] = 1
         root_hue = self.colors[root_hue.astype(int)]
 
         return np.array(np.vectorize(colorsys.hls_to_rgb)(
-                        root_hue, iter_light, 1)).transpose(1,2,0)
+                        root_hue, iter_light, 1)).transpose(1, 2, 0)
 
 
 # In[6]
-
 
     def switch_zoom(self, event):
         """
         Method to interact with the keyboard.
         The programme queries in individual if loops whether certain keys are 
         pressed and, if so, executes the corresponding operation.
-        
+
         'z' is pressed: Switch bewteen the two zoom options.
         'b' is pressed: Zoom back to the last zoom.
         'o' is pressed: Zoom out the fix property of 2.
@@ -335,7 +335,7 @@ class Fractal:
             Object which contains the information about the pressd keyboard 
             key.
         """
-        if event.key == "z": # switch between the two zoom options
+        if event.key == "z":  # switch between the two zoom options
             self.zoom = not self.zoom
             if self.zoom:
                 plt.disconnect(self.bindingidtranslation)
@@ -349,26 +349,25 @@ class Fractal:
                     'scroll_event', self.zoom2)
                 self.bindingidtranslation = self.fig.canvas.mpl_connect(
                     'button_press_event', self.translation)
-        elif event.key == "b": # Zoom to the last zoom
+        elif event.key == "b":  # Zoom to the last zoom
             if len(self.lims) == 1:
                 print("No zoom state before initial state.")
             else:
                 self.lims.pop(-1)
                 self.update(True)
-        elif event.key == "o": # Zoom out
+        elif event.key == "o":  # Zoom out
             center = np.sum(self.lims[-1], axis=0)/2
             self.set_lims(2*(self.lims[-1]-center)+center)
             self.update(True)
-        elif event.key == "r": # reset
+        elif event.key == "r":  # reset
             self.set_lims()
             self.update(True)
-        elif event.key == "t": # Toggle infobox
+        elif event.key == "t":  # Toggle infobox
             self.text = not self.text
             self.update()
 
 
 # In[7]
-
 
     def zoom1(self, event):
         """
@@ -417,7 +416,7 @@ class Fractal:
             self.rectangle = None
 
             val2 = np.array([event_3.xdata, event_3.ydata])
-            if None not in np.array([val1,val2]) and not (val1-val2==0).any():
+            if None not in np.array([val1, val2]) and not (val1-val2 == 0).any():
                 self.set_lims(np.sort([val1, val2], axis=0))
                 self.update(True)
             else:
@@ -427,7 +426,6 @@ class Fractal:
 
 
 # In[8]
-
 
     def zoom2(self, event):
         """
@@ -495,7 +493,6 @@ class Fractal:
 
 # In[9]
 
-
     def isVisible(self):
         """
         Tests wether the figure is stil open (-> True) 
@@ -509,16 +506,13 @@ class Fractal:
         """
         still_open = self.fig.canvas.isVisible()
         return still_open
-        
-    
+
     def kino(self):
         """
         Function for the animated zoom. If there is a pointer the plot will 
         be zoomed in automaticly.
         """
-        if self.pointer!=None:
-            self.set_lims(1/(time.perf_counter()-self.start_time)*(self.start_lims
-                                                    -self.pointer)+self.pointer)
+        if self.pointer != None:
+            self.set_lims(np.exp(-0.06*(time.perf_counter()-self.start_time))*(self.start_lims
+                                                                       - self.pointer)+self.pointer)
             self.update(True)
-        
-    

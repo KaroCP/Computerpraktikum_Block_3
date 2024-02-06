@@ -89,7 +89,7 @@ b = np.array([1,2])
 # c = (A.T+b).T
 # print(c)
 # print(time.perf_counter()-start_time)
-plt.plot(*A, c=colorsys.hsv_to_rgb(0,1,0.5))
+# plt.plot(*A, c=colorsys.hsv_to_rgb(0,1,0.5))
 
 
 fig, ax = plt.subplots()
@@ -109,6 +109,7 @@ def update(val):
     fig.canvas.draw_idle()
     
 amp_slider.on_changed(update)
+# print(type(amp_slider))
 
 
 # In[3]

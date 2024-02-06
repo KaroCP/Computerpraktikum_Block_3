@@ -8,7 +8,9 @@ Newton approximation form Karo.
 
 import numpy as np
 import warnings
-warnings.simplefilter("ignore")
+warnings.filterwarnings("ignore")
+
+idea = True
 
 
 # In[2]
@@ -65,19 +67,22 @@ def newton_approximation(func, diff, grid, max_iterations, tolerance):
     value = grid[0]+1J*grid[1]
     dim = value.shape[1]
     iterations = np.zeros((dim,dim))
-    done = np.zeros((dim,dim)).astype(bool)
+    undone = np.ones((dim,dim)).astype(bool)
     
     # Iteration step for those, where done is False.
     for i in range(max_iterations):
         value_old = value.copy()
-        done_old = done.copy()
-        value = value_old-np.array([[0 if done_old[i,j] 
-                                     else calculate_step(value_old[i,j])
-                                     for j in range(dim)] for i in range(dim)])
-        done = np.logical_or(value==np.Inf, np.abs(value-value_old)<tolerance)
-        iterations[np.logical_and(done,np.logical_not(done_old))] = i+1
-        if done.all(): break
-    value[np.logical_not(done)] = np.Inf
+        undone_old = undone.copy()
+        if idea:
+            value[undone] = value_old[undone]-calculate_step(value_old[undone])
+        else: 
+            value = value_old-np.array([[0 if not undone_old[i,j] 
+                                          else calculate_step(value_old[i,j])
+                                          for j in range(dim)] for i in range(dim)])
+        undone = np.logical_and(value!=np.Inf, np.abs(value-value_old)>=tolerance)
+        iterations[np.logical_and(np.logical_not(undone),undone_old)] = i+1
+        if not undone.any(): break
+    value[undone] = np.Inf
     
     # Calculate the set of roots
     data = value[value!=np.Inf]

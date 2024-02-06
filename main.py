@@ -33,9 +33,11 @@ You have two zoom options:
 Press 'b' to zoome back to the last zoom settings.
 Press 'o' to zoome (a fix property) out.
 Press 'r' to reset the zoom.
+Klick (don't draw) on the slider to change the 
+    density of the pixels.
 """)
 
 if frac.pointer!=None:
     while frac.isVisible():
         frac.kino()
-    
+
