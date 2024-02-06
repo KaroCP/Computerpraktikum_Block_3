@@ -15,9 +15,8 @@ from data_collection import get_fractal
 
 print("Welcome to our project")
 frac = Fractal(*get_fractal())
-frac.set_fast(False)
-frac.recalculate = True
-frac.update()
+frac.fast = False #TODO
+frac.update(True)
 # Funfact: the "frac = " part ist necessary for the interaction.
 
 print("""Ready.
@@ -34,9 +33,11 @@ You have two zoom options:
 Press 'b' to zoome back to the last zoom settings.
 Press 'o' to zoome (a fix property) out.
 Press 'r' to reset the zoom.
+Klick (don't draw) on the slider to change the 
+    density of the pixels.
 """)
 
 if frac.pointer!=None:
     while frac.isVisible():
         frac.kino()
-    
+
