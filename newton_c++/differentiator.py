@@ -4,6 +4,7 @@ f1 = lambda x:x**3-1
 
 from sympy.parsing.sympy_parser import parse_expr
 import sympy
+from sympy import sympify
 
 # function ist eine lambda function
 def ableitung (function):
@@ -17,7 +18,6 @@ def ableitung (function):
 
 
 
-
 # hier kommt karos anfrage für eine konsolen eingabe eines strings (zb x^3 ...)
 
 def choose_any_fractal_function():
@@ -27,13 +27,14 @@ please input your function that mapps x to some complex value, ie for example x^
     while temporary_bool: 
         input1 = input("->")
         try:
-            f = lambda x:eval(input1.replace("^", "**"))
-            diff = ableitung(f)
+            f = sympify(input1)
+            print(f)
+            diff = sympy.diff(f, sympy.Symbol("x"))
             label = input1
-            return f,diff,label
             temporary_bool = False
-        except Exception as e:
-            print(e)
+            print("function parsed!")
+            return sympy.lambdify(sympy.Symbol("x"), f),sympy.lambdify(sympy.Symbol("x"), diff),label
+        except:
             print("please enter parsable expression")
 
 print(choose_any_fractal_function())

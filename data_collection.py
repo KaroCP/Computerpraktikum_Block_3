@@ -10,6 +10,7 @@ Now a collection for data.
 import numpy as np
 from sympy.parsing.sympy_parser import parse_expr
 import sympy
+from sympy import sympify
 
 
 # In[2]
@@ -222,16 +223,18 @@ Please input your function that maps z to some complex
 value, i.e. for example z^3-1""")
     temporary_bool = True
     while temporary_bool: 
-        input1 = input(" > ")
+        input1 = input("->")
         try:
-            func = lambda z:eval(input1.replace("^", "**"))
-            diff = sympy.lambdify(sympy.symbols("z"),sympy.diff(parse_expr(
-        str(func(sympy.symbols("z"))), transformations='all'), "z"))
+            f = sympify(input1)
+            print(f)
+            diff = sympy.diff(f, sympy.Symbol("z"))
             label = input1
             temporary_bool = False
-            return func,diff,label
-        except: pass
-    
+            print("function parsed!")
+            return sympy.lambdify(sympy.Symbol("z"), f),sympy.lambdify(sympy.Symbol("z"), diff),label
+        except:
+            print("please enter parsable expression")
+
 
 # In[6]
 

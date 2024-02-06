@@ -628,10 +628,10 @@ async function postData1(url = "", data = {}) {
 
 // OPEN GL HERE
 function runGL(retter1, retter2){
-var Schranke = 0.0001 // einfac setzen (empirische Entscheidung)
+var Schranke = 0.0000001 // einfach setzen (empirische Entscheidung)
 // this holds the NEWTON Algorithm
 var functionString = [
-"float temp_real = position[0]*float(" + coordinates.zoom + ")*float(" + (coordinates.xLimits[0]-coordinates.xLimits[0])/2 + ") + " + ((coordinates.xLimits[0]-coordinates.xLimits[0])/2 + coordinates.xLimits[0]) + ";",
+"float temp_real = position[0]*float(" + 1 + ");",
 "float temp_im = position[1];",
 "int counter = 1;",
 "int Booler = 1;",
