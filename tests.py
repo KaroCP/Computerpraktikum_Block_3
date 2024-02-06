@@ -37,6 +37,7 @@ density_linspace = np.linspace(5,100, num = 20)
 # plt.legend()
 # plt.show()
 
+time_1 = []
 for i in range(max_tests):
     start_time = time.perf_counter()
     newton_approximation(f_func, f_diff, grid, max_iterations, tolerance)
