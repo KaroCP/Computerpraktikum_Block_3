@@ -25,7 +25,7 @@ def choose_any_fractal_function():
 please input your function that mapps x to some complex value, ie for example x^3-1""")
     temporary_bool = True
     while temporary_bool: 
-        input1 = input()
+        input1 = input("->")
         try:
             f = lambda x:eval(input1.replace("^", "**"))
             diff = ableitung(f)

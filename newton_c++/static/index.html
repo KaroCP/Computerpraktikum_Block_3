@@ -15,6 +15,10 @@
 		<center>
 			<input type='text' class='setting' placeholder='Maximum Iteration Count here' id="iteration_holder" onchange="MaxIterationCount = this.value; console.log('MaxIterationCount changed to : ' + MaxIterationCount)"></input>
 		</center>		
+		<h2>Vertecies per dir.</h2>
+		<center>
+		<input type='text' class='setting' placeholder='1000' id="vertex_holder" onchange="ammounOfVerteciesX = this.value; console.log('ammounOfVerteciesX changed to : ' + ammounOfVerteciesX); ammounOfVerteciesY = this.value; setVertecies();"></input>
+		</center>	
 	</div>
 	<button id="button" onclick="calculate();">
 		Calculate
@@ -329,8 +333,8 @@ const coordinates = new canvas_coordinates; // coordinates object holds all rele
 var funcc = document.getElementById("function_holder").value; // holds the information for the function that is to be plotted, changes ONCHANGE in inline JS
 var MaxIterationCount = document.getElementById("iteration_holder").value; // holds the maximun iterations, changes ONCHANGE in inline JS
 function calculate(){
+	calculatePython(funcc);
 	//console.log(calculatePreset(funcc));// can only calculate functions of type x^n-1
-	runGL();
 // the following functions either call other programms or perform natively to produce Image
 //...
 }
@@ -388,33 +392,258 @@ function calculatePreset(string){ // uses binomial theorem to calculate re and I
 	var final_real = "(1.0/(pow(" + u_a + ",2.0) + pow(" + v_a + ",2.0)))*(" + u + "*" + u_a + " + " + v + "*" + v_a + ")";
 	var final_im = "(1.0/(pow(" + u_a + ",2.0) + pow(" + v_a + ",2.0)))*(" + u + "*" + u_b + " + " + v + "*" + v_b + ")";
 	
-	return [final_real, final_im];// reference wikipedia : https://de.wikipedia.org/wiki/Newtonverfahren
+	// for TESTING purposes changed
+	return [
+	final_real,
+	final_im
+	];// reference wikipedia : https://de.wikipedia.org/wiki/Newtonverfahren
+}
+
+
+function calculatePython(string){ // uses sympy server to calculate what we need (f/f')
+	// THESE hold the final RETURN values and are changed after POST
+	var retter1 = 0;
+	var retter2 = 0;
+
+	// Javascript program to find index of closing
+  // bracket for given opening bracket.
+  class Stack {
+    constructor() {
+      this.items = [];
+    }
+ 
+    // add element to the stack
+    push(element) {
+      return this.items.push(element);
+    }
+ 
+    // remove element from the stack
+    pop() {
+      if (this.items.length > 0) {
+        return this.items.pop();
+      }
+    }
+ 
+    // view the last element
+    top() {
+      return this.items[this.items.length - 1];
+    }
+ 
+    // check if the stack is empty
+    isEmpty() {
+      return this.items.length == 0;
+    }
+ 
+    // the size of the stack
+    size() {
+      return this.items.length;
+    }
+ 
+    // empty the stack
+    clear() {
+      this.items = [];
+    }
+  }
+  let st = new Stack();
+ 
+  // Function to find index of closing
+  // bracket for given opening bracket.
+  function right(expression, index) {
+    var i;
+ 
+    // If index given is invalid and is
+    // not an opening bracket.
+    if (expression[index] != "(") {
+	  // if the character is a number just look for next blank space
+	  var i = index;
+	  while(!isNaN(parseInt(expression[i])) || expression[i] == "." || expression[i].match(/[a-z]/i)){ // floatingpoint and numbers are viewed as he same
+		i++;
+		//console.log("in while : " + expression[i]);
+	  }
+	  //console.log(expression.slice(index, i) + " : is Number from " + index +  " till " + i + " index of " + expression);
+	  return i;
+    }
+ 
+    // Stack to store opening brackets.
+    let st = new Stack();
+    //stack <int> st;
+ 
+    // Traverse through string starting from
+    // given index.
+    for (i = index; i < expression.length; i++) {
+      // If current character is an
+      // opening bracket push it in stack.
+      if (expression[i] == "(") st.push(expression[i]);
+      // If current character is a closing
+      // bracket, pop from stack. If stack
+      // is empty, then this closing
+      // bracket is required bracket.
+      else if (expression[i] == ")") {
+        st.pop();
+        if (st.isEmpty()) {
+          //console.log(expression + ", " + index + ": " + i);
+          return i+1;
+        }
+      }
+    }
+ 
+    // If no matching closing bracket
+    // is found.
+    return 404
+  }
+  
+function left(expression, index) {
+
+
+    var i;
+ 
+    // If index given is invalid and is
+    // not an opening bracket.
+    if (expression[index] != ")") {
+	  // if the character is a number just look for next blank space
+	  var i = index;
+	  //console.log(expression[i])
+	  while(!isNaN(parseInt(expression[i])) || expression[i] == "." || expression[i].match(/[a-z]/i)){ // floatingpoint and numbers are viewed as he same
+		i--;
+		//console.log("in while : " + expression[i]);
+	  }
+	  //console.log(expression.slice(index, i) + " : is Number from " + index +  " till " + i + " index of " + expression);
+	  return i + 1;
+    }
+ 
+    // Stack to store opening brackets.
+    let st = new Stack();
+    //stack <int> st;
+ 
+    // Traverse through string starting from
+    // given index.
+	//console.log("log of LEFT " + expression[index]);
+    for (i = 0; i < expression.length; i++) {
+      // If current character is an
+      // opening bracket push it in stack.
+      //console.log("log of LEFT in FOR " + expression[index - i]);
+	  if (expression[index - i] == ")") st.push(expression[index - i]);
+      // If current character is a closing
+      // bracket, pop from stack. If stack
+      // is empty, then this closing
+      // bracket is required bracket.
+      else if (expression[index - i] == "(") {
+        st.pop();
+        if (st.isEmpty()) {
+          //console.log(expression + ", " + index + ": " + i);
+		  return index - i;
+        }
+      }
+    }
+ 
+    // If no matching closing bracket
+    // is found.
+    return 404
+  }
+  
+  
+  
+  function PowerSyntaxConverter(str){ // will convert from ** PowerSyntax to pow(...) PowerSyntax
+	var lenn = JSON.parse(JSON.stringify(str)).split("**") // 3**2 -> [3,2] JUST for for loop iteration ammount
+	//console.log(lenn)
+	for(var i = 0; i < lenn.length - 1; i++){
+		//console.log("BEFORE" + str);
+		// search right with right(), wich returns index of the end of the expression on the right:
+		var rightTerm = str.slice(str.indexOf("**") + 2,right(str, str.indexOf("**") + 2));
+		//console.log("right " + rightTerm);
+		// search left with left(), wich returns index of the end of the expression on the left:
+		var leftTerm = str.slice(left(str, str.indexOf("**") - 1), str.indexOf("**"))
+		//console.log("left " + leftTerm);
+		// now replace [leftTerm**rightTerm] width [pow(leftTerm,rightTerm)]
+		str = str.replace(leftTerm + "**" + rightTerm , "pow(" + leftTerm + "," + rightTerm + ")");
+		//console.log(str);
+	}
+	return str
+}
+  
+  	function postdata(daTa){
+	try{
+		postData1("http://localhost:5000/", {"info" : JSON.stringify(daTa)}).then((data) => {
+				
+				function formatToGLSLfloat(sstr){
+					// formating to GLSL flaots here
+					const regexp = /[\d|.|\+]+/g;
+					var str = sstr;
+					var match;
+					var tempstr = str.split("");
+					//console.log(tempstr);
+					var matcher = 0;
+					while ((match = regexp.exec(str)) !== null) {
+					  //console.log(
+						//`Found ${match[0]} start=${match.index} end=${regexp.lastIndex}.`,
+					  //);
+					  if(match[0].includes(".") || match[0].includes("+")){}//do nothing
+					  else{
+						tempstr.splice(match.index - matcher, match[0].length, match[0].split("").concat(".0".split("")).join(""));
+						matcher += match[0].length-1;
+					  }
+					  //console.log(tempstr)
+					}
+					//console.log(tempstr)
+					return tempstr.join("")
+				}
+				
+				retter1 = formatToGLSLfloat(PowerSyntaxConverter(data.info[0])).replaceAll("+.0", "+");
+				retter2 = formatToGLSLfloat(PowerSyntaxConverter(data.info[1])).replaceAll("+.0", "+");
+				runGL(retter1, retter2)
+			});
+		}
+		catch(err){
+			console.log("error while fetching DATA");
+		}
+	}
+	postdata(funcc); // POST some DATA here to PYTHON SERVER
 }
 
 
 
 
-// OPEN GL HERE
-function runGL(){
-var Schranke = 0.0001 // einfac setzen (empirische Entscheidung)
+// Example POST method implementation:
+async function postData1(url = "", data = {}) {
+  // Default options are marked with *
+  const response = await fetch(url, {
+    method: "POST", // *GET, POST, PUT, DELETE, etc.
+    mode: "cors", // no-cors, *cors, same-origin
+    cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: "same-origin", // include, *same-origin, omit
+    headers: {
+      "Content-Type": "application/json",
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    redirect: "follow", // manual, *follow, error
+    referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+    body: JSON.stringify(data), // body data type must match "Content-Type" header
+  });
+  return response.json(); // parses JSON response into native JavaScript objects
+}
 
+
+
+
+
+// OPEN GL HERE
+function runGL(retter1, retter2){
+var Schranke = 0.0001 // einfac setzen (empirische Entscheidung)
 // this holds the NEWTON Algorithm
 var functionString = [
-"float temp_real = position[0];",
+"float temp_real = position[0]*float(" + coordinates.zoom + ")*float(" + (coordinates.xLimits[0]-coordinates.xLimits[0])/2 + ") + " + ((coordinates.xLimits[0]-coordinates.xLimits[0])/2 + coordinates.xLimits[0]) + ";",
 "float temp_im = position[1];",
 "int counter = 1;",
 "int Booler = 1;",
 "for (int j = 0; j < " + MaxIterationCount + "; j += 1){",
-	//"if(Booler == 1 && j == 1 && (pow(2.0,3.0) < 1000.0)){", // line is purely for testing
-	"if(Booler == 1 && pow(pow("  + calculatePreset(funcc)[0].replaceAll('a', 'temp_real').replaceAll('b', 'temp_im') + ",2.0) + pow(" + calculatePreset(funcc)[1].replaceAll('b', 'temp_im').replaceAll('a', 'temp_real') + ",2.0),0.5) < " + Schranke + "){",
+	"if(Booler == 1 && pow(pow("  + retter1.replaceAll('b', 'temp_im').replaceAll('a', 'temp_real') + ",2.0) + pow(" + retter2.replaceAll('b', 'temp_im').replaceAll('a', 'temp_real') + ",2.0),0.5) < " + Schranke + "){",
 		"counter = j;",
 		"Booler = 2;",
 	"}",
-	"temp_real -= " + calculatePreset(funcc)[0].replaceAll('a', 'temp_real').replaceAll('b', 'temp_im') + ";",
-	"temp_im -= " + calculatePreset(funcc)[1].replaceAll('b', 'temp_im').replaceAll('a', 'temp_real') + ";",
+	"temp_real = temp_real -" + retter1.replaceAll('b', 'temp_im').replaceAll('a', 'temp_real') +  ";",
+	"temp_im = temp_im - " + retter2.replaceAll('b', 'temp_im').replaceAll('a', 'temp_real') + ";",
 "}",
-"float tester = " + calculatePreset(funcc)[0].replaceAll('a', 'temp_real').replaceAll('b', 'temp_im') + ";",
-"vColor = vec3((tester),atan(float(counter))/6.28 + 0.5,0.5);"
+"vColor = vec3(float(counter)/10.0,float(counter)/10.0,float(counter)/10.0);"
 ].join("\n")
 
 //console.log(functionString);
@@ -535,13 +764,15 @@ const vertexData = [ // JUST DATA (many more vertecies are needed to ensure clea
 
 ];
 // load vertecies
-var ammounOfVerteciesX = 1000;
-var ammounOfVerteciesY = 1000;
-for(jk = 0; jk < ammounOfVerteciesY; jk++){
-	for(kj = 0; kj < ammounOfVerteciesX; kj++){
-		vertexData.push(-1 + (2/ammounOfVerteciesX)*kj,-1 + (2/ammounOfVerteciesY) + (2/ammounOfVerteciesY)*jk,0,-1 + (2/ammounOfVerteciesX) + (2/ammounOfVerteciesX)*kj,-1 + (2/ammounOfVerteciesX) + (2/ammounOfVerteciesY)*jk,0,-1 + (2/ammounOfVerteciesX) + (2/ammounOfVerteciesX)*kj,-1 + (2/ammounOfVerteciesY)*jk,0);
-		vertexData.push(-1 + (2/ammounOfVerteciesX)*kj,-1 + (2/ammounOfVerteciesY) + (2/ammounOfVerteciesY)*jk,0,-1 + (2/ammounOfVerteciesX)*kj,-1 + (2/ammounOfVerteciesY)*jk,0,-1 + (2/ammounOfVerteciesX) + (2/ammounOfVerteciesX)*kj,-1 + (2/ammounOfVerteciesY)*jk,0);
+var ammounOfVerteciesX = document.getElementById("vertex_holder").value;
+var ammounOfVerteciesY = document.getElementById("vertex_holder").value;
+function setVertecies(){
+	for(jk = 0; jk < ammounOfVerteciesY; jk++){
+		for(kj = 0; kj < ammounOfVerteciesX; kj++){
+			vertexData.push(-1 + (2/ammounOfVerteciesX)*kj,-1 + (2/ammounOfVerteciesY) + (2/ammounOfVerteciesY)*jk,0,-1 + (2/ammounOfVerteciesX) + (2/ammounOfVerteciesX)*kj,-1 + (2/ammounOfVerteciesX) + (2/ammounOfVerteciesY)*jk,0,-1 + (2/ammounOfVerteciesX) + (2/ammounOfVerteciesX)*kj,-1 + (2/ammounOfVerteciesY)*jk,0);
+			vertexData.push(-1 + (2/ammounOfVerteciesX)*kj,-1 + (2/ammounOfVerteciesY) + (2/ammounOfVerteciesY)*jk,0,-1 + (2/ammounOfVerteciesX)*kj,-1 + (2/ammounOfVerteciesY)*jk,0,-1 + (2/ammounOfVerteciesX) + (2/ammounOfVerteciesX)*kj,-1 + (2/ammounOfVerteciesY)*jk,0);
+		}
 	}
 }
-
+setVertecies();
 </script>
