@@ -195,17 +195,17 @@ Please input your function that maps z to some complex
 value, i.e. for example z^3-1""")
     temporary_bool = True
     while temporary_bool: 
-        input1 = input("->")
+        input1 = input(" > ")
         try:
             f = sympify(input1)
             print(f)
             diff = sympy.diff(f, sympy.Symbol("z"))
             label = input1
             temporary_bool = False
-            print("function parsed!")
+            print("The function parsed!")
             return sympy.lambdify(sympy.Symbol("z"), f),sympy.lambdify(sympy.Symbol("z"), diff),label
         except:
-            print("please enter parsable expression")
+            print("Please enter a parsable expression.")
 
 
 # In[6]
