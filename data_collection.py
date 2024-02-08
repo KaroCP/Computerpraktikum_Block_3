@@ -114,8 +114,8 @@ f9_label = "e^x-1"
 
 f10_func = lambda z:np.exp(-2*z)-1
 f10_diff = lambda z:-2*np.exp(-2*z)
-f10_label = "e^(-2x)-1 with animation, still not optimal" #TODO
-f10_pointer = [np.pi/np.exp(3),np.sin(1)]
+f10_label = "e^(-2x)-1 with animation"
+f10_pointer = [np.pi/np.exp(3)+0.001,np.sin(1)*np.sqrt(2)]
 
 f11_func = lambda z:np.sin(1/z)
 f11_diff = lambda z:-np.cos(1/z)/z**2

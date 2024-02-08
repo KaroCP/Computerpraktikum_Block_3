@@ -4,8 +4,6 @@ import numpy as np
 import warnings
 warnings.filterwarnings("ignore")
 
-idea = True
-
 
 # In[2]
 
@@ -67,16 +65,12 @@ def newton_approximation(func, diff, grid, max_iterations, tolerance):
     for i in range(max_iterations):
         value_old = value.copy()
         undone_old = undone.copy()
-        if idea:
-            value[undone] = value_old[undone]-calculate_step(value_old[undone])
-        else: 
-            value = value_old-np.array([[0 if not undone_old[i,j] 
-                                          else calculate_step(value_old[i,j])
-                                          for j in range(dim)] for i in range(dim)])
+        value[undone] = value_old[undone]-calculate_step(value_old[undone])
         undone = np.logical_and(value!=np.Inf, np.abs(value-value_old)>=tolerance)
         iterations[np.logical_and(np.logical_not(undone),undone_old)] = i+1
         if not undone.any(): break
     value[undone] = np.Inf
+    value[np.isnan(value)] = np.Inf
     
     # Calculate the set of roots
     data = value[value!=np.Inf]
@@ -88,9 +82,10 @@ def newton_approximation(func, diff, grid, max_iterations, tolerance):
     roots = np.sort_complex([np.average(r_set) for r_set in roots_set])
     
     # make last calculations
-    indexes = np.array([[len(roots) if value[i,j]==np.Inf
-                         else np.argmin(np.abs(value[i,j]-roots))
-                         for j in range(dim)] for i in range(dim)])
+    indexes = np.where(value==np.Inf,len(roots),0)
+    value_temp = np.kron(value[value!=np.Inf],np.ones_like(roots))
+    value_temp = value_temp.reshape(int(len(value_temp)/len(roots)),len(roots))
+    indexes[value!=np.Inf] = np.argmin(abs(value_temp-roots),axis=1).flatten()
     roots = np.append(roots, np.Inf)
     
     return roots, indexes, iterations
