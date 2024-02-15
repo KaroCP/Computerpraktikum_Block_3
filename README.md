@@ -12,7 +12,7 @@ Die AUFGABENSTELLUNG und ANWEISUNGEN Folder beinhaltet die Aufgabenstellung und 
 - Interaktion implementieren (Karo)
 - Ableitung symbolisch berechnen (Momo)
 ## (aktuelle) TODOs:
-- Bericht für das Projekt schreiben. https://www.overleaf.com/read/gnsrfsdwchdc#f08c78
+- Bericht für das Projekt schreiben: https://www.overleaf.com/read/hwzhrfqpchkt#9e6fea
 ## Weitere Ideen
 - Parameterabhängige Funktionen als Beispiele machen
 - Adaptive Max_Iteration (großes Max Iterarion und durch np.max teilen)
