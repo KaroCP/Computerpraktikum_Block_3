@@ -71,6 +71,8 @@ def newton_approximation(func, diff, grid, max_iterations, tolerance):
         if not undone.any(): break
     value[undone] = np.Inf
     value[np.isnan(value)] = np.Inf
+    if np.all(value==np.inf):
+        return [np.complex128(np.Inf)], np.zeros_like(value), iterations
     
     # Calculate the set of roots
     data = value[value!=np.Inf]

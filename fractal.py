@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 
 from matplotlib.widgets import Slider
 from matplotlib.patches import Rectangle
+from matplotlib.backend_bases import MouseButton
 import colorsys
 import time
 
@@ -213,15 +214,17 @@ class Fractal:
         str
             Infostring about the function and the plot.
         """
-        textstr1 = '\n'.join(("The function is "+self.label,
+        general_info = '\n'.join(("The function is "+self.label,
                               "and the fractal is ploted with {}*{} pixels.".format(
                                   self.density, self.density),
+                              "The last calculation took {} seconds.".format(
+                                  self.calulation_time),
                               "The {} roots with resp. color in hsl are:".format(
                                   len(self.roots)-1), ""))
-        textstr2 = '\n'.join([str(self.roots[i])+", " +
+        roots_string = '\n'.join([str(self.roots[i])+", " +
                               str(int(255*self.colors[i]))
-                              for i in range(len(self.roots)-1)])
-        return textstr1+textstr2
+                              for i in range(min(len(self.roots)-1,40))])
+        return general_info+roots_string
 
     def slider_update(self, val):
         """
@@ -261,7 +264,7 @@ class Fractal:
         ax.imshow(self.plot_data, origin="lower",
                   extent=self.lims[-1].T.flatten())
         if self.text:
-            to_text = plt.figtext(0.5, 0.95, self.get_info_str(), fontsize=6,
+            to_text = plt.figtext(0.5, 0.95, self.get_info_str(), fontsize=12,
                                   bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.9))
             to_text.set_horizontalalignment("center")
             to_text.set_verticalalignment("top")
@@ -369,6 +372,7 @@ class Fractal:
             Object which contains the information of the coordinates of 
             the mouse pointer.
         """
+        if event.button is MouseButton.RIGHT: return
         val1 = np.array([event.xdata, event.ydata])
 
         def motion_notify(event_2):
@@ -443,8 +447,9 @@ class Fractal:
             Object which contains the information of the coordinates of 
             the mouse pointer.
         """
+        if event.button is MouseButton.RIGHT: return
         value1 = np.array([event.xdata, event.ydata])
-        self.set_lims(self.lims[-1])
+        self.set_lims(self.lims[-1])                    # to zoome back later
 
         def motion_notify(event_2):
             """

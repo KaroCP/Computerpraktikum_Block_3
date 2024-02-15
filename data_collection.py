@@ -76,11 +76,11 @@ Please chose the power n.""")
 
 f1_func = lambda z:np.power(z,3)-1
 f1_diff = lambda z:3*np.power(z,2)
-f1_label = "x^3-1"
+f1_label = "z^3-1"
 
 f2_func = lambda z:np.power(z,3)-1
 f2_diff = lambda z:3*np.power(z,2)
-f2_label = "x^3-1 with animation" 
+f2_label = "z^3-1 with animation" 
 f2_pointer = [-np.pi/np.sqrt(12),0.08]
 
 f3_func = lambda z:1/z+z**2
@@ -90,49 +90,49 @@ f3_label = "1/z+z^2"
 # (z-1)^2(z+1)(z-1J) = (z-i)(z-1)(z^2-1) = (z-i)(z^3-z^2-z^+1) = z^4-(1+i)z^3-(1+i)z^2+(1-i)z-i
 f4_func = lambda z:np.power(z,4)-(1+1J)*np.power(z,3)-(1-1J)*z**2+(1+1J)*z-1J
 f4_diff = lambda z:4*np.power(z,3)-3*(1+1J)*np.power(z,2)-2*(1-1J)*z+(1+1J)
-f4_label = "(x-1)^2*(x+1)*(x-i)"  
+f4_label = "(z-1)^2*(z+1)*(z-i)"  
 
 f5_func = lambda z:z**4-z**2+1
 f5_diff = lambda z:4*z**3-2*z
-f5_label = "x^4-x^2+1"
+f5_label = "z^4-z^2+1"
 
 f6_func = lambda z:np.power(z,7)-z
 f6_diff = lambda z:7*np.power(z,6)-1
-f6_label = "x^7-x"
+f6_label = "z^7-z"
 
 f7_func = lambda z:np.power(z,12)-1
 f7_diff = lambda z:12*np.power(z,11)
-f7_label = "x^12-1"
+f7_label = "z^12-1"
 
 f8_func = lambda z:np.sin(z)
 f8_diff = lambda z:np.cos(z)
-f8_label = "sin(x)"
+f8_label = "sin(z)"
 
 f9_func = lambda z:np.exp(z)-1
 f9_diff = lambda z:np.exp(z)
-f9_label = "e^x-1"
+f9_label = "e^z-1"
 
-f10_func = lambda z:np.exp(-2*z)-1
-f10_diff = lambda z:-2*np.exp(-2*z)
-f10_label = "e^(-2x)-1 with animation"
-f10_pointer = [np.pi/np.exp(3)+0.001,np.sin(1)*np.sqrt(2)]
+f10_func = lambda z:np.exp(-3*z)-1
+f10_diff = lambda z:-3*np.exp(-3*z)
+f10_label = "e^(-2z)-1 with animation"
+f10_pointer = [np.pi/np.exp(3)+0.03,np.sin(1)*np.sqrt(2)-0.12]
 
 f11_func = lambda z:np.sin(1/z)
 f11_diff = lambda z:-np.cos(1/z)/z**2
-f11_label = "sin(1/x)"
+f11_label = "sin(1/z)"
 
 f12_func = lambda z:np.sin(1/z)
 f12_diff = lambda z:-np.cos(1/z)/z**2
 f12_pointer = [0,0]
-f12_label = "sin(1/x) with animation"
+f12_label = "sin(1/z) with animation"
 
 f13_func = lambda z:np.exp(1/z)-1
 f13_diff = lambda z:-np.exp(1/z)/z**2
-f13_label = "e^(1/x)-1"
+f13_label = "e^(1/z)-1"
 
 f14_func = lambda z:np.log(z)
 f14_diff = lambda z:1/z
-f14_label = "log(x)"
+f14_label = "log(z)"
 
 data_set = [[ f1_func,  f1_diff,  f1_label],
             [ f2_func,  f2_diff,  f2_label,  f2_pointer],
