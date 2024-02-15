@@ -12,11 +12,7 @@ Die AUFGABENSTELLUNG und ANWEISUNGEN Folder beinhaltet die Aufgabenstellung und 
 - Interaktion implementieren (Karo)
 - Ableitung symbolisch berechnen (Momo)
 ## (aktuelle) TODOs:
-- Präsentation machen
-- Bericht für das Projekt schreiben. https://www.overleaf.com/project/65bfa1bcc677b426a3b87741
-- Zeitmessung: Wie hängt die Berechnungszeit von der density ab. <br>
-  An sich erstmal für den Bericht. Ich fände es aber auch cool, wenn man eine Abschätzung für Berechnungsdauer printen lassen könnte (abhängig von der letzten Berechnungsdauer und der gewünschten Neuberechnung).
-- überlegung cooler Beispielfunktionen
+- Bericht für das Projekt schreiben. https://www.overleaf.com/read/gnsrfsdwchdc#f08c78
 ## Weitere Ideen
 - Parameterabhängige Funktionen als Beispiele machen
 - Adaptive Max_Iteration (großes Max Iterarion und durch np.max teilen)
