@@ -218,11 +218,11 @@ class Fractal:
             Infostring about the function and the plot.
         """
         general_info = '\n'.join(("The function is "+self.label,
-                              "and the fractal is ploted with {}*{} pixels.".format(
+                        "and the fractal is ploted with {}*{} pixels.".format(
                                   self.density, self.density),
-                              "The last calculation took {} seconds.".format(
+                        "The last calculation took {} seconds.".format(
                                   self.calulation_time),
-                              "The {} roots with resp. color in hsl are:".format(
+                        "The {} roots with resp. color in hsl are:".format(
                                   len(self.roots)-1), ""))
         roots_string = '\n'.join([str(self.roots[i])+", " +
                               str(int(255*self.colors[i]))
@@ -268,7 +268,8 @@ class Fractal:
                   extent=self.lims[-1].T.flatten())
         if self.text:
             to_text = plt.figtext(0.5, 0.95, self.get_info_str(), fontsize=12,
-                                  bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.9))
+                                  bbox=dict(boxstyle='round',
+                                            facecolor='wheat', alpha=0.9))
             to_text.set_horizontalalignment("center")
             to_text.set_verticalalignment("top")
         if self.rectangle != None:
@@ -277,8 +278,9 @@ class Fractal:
         # Init Slider
         slider_ax = self.fig.add_axes([0.08, 0.1, 0.02, 0.79])
         self.slider = Slider(ax=slider_ax,
-                             label="Pixel densit\nin log scale", valmin=0.5, valmax=3.5,
-                             valinit=np.log10(self.density), orientation="vertical")
+                             label="Pixel densit\nin log scale", valmin=0.5,
+                             valmax=3.5, valinit=np.log10(self.density), 
+                             orientation="vertical")
         self.slider.on_changed(self.slider_update)
 
         # draw
@@ -301,7 +303,7 @@ class Fractal:
         grid = np.meshgrid(np.linspace(*self.lims[-1][:, 0], self.density),
                            np.linspace(*self.lims[-1][:, 1], self.density))
         roots, root_hue, iter_light = newton_approximation(self.func,
-                                                           self.diff, grid, self.max_iteration, self.tolerance)
+                        self.diff, grid, self.max_iteration, self.tolerance)
         self.set_roots(roots)
         iter_light = np.array((7/8*iter_light/self.max_iteration+1/8))
         iter_light[root_hue == len(self.roots)-1] = 1
@@ -413,7 +415,7 @@ class Fractal:
             self.rectangle = None
 
             val2 = np.array([event_3.xdata, event_3.ydata])
-            if None not in np.array([val1, val2]) and not (val1-val2 == 0).any():
+            if None not in np.array([val1,val2]) and not (val1-val2==0).any():
                 self.set_lims(np.sort([val1, val2], axis=0))
                 self.update(True)
             else:
@@ -511,6 +513,7 @@ class Fractal:
         be zoomed in automaticly.
         """
         if self.pointer != None:
-            self.set_lims(np.exp(-0.06*(time.perf_counter()-self.start_time))*(self.start_lims
-                                                                       - self.pointer)+self.pointer)
+            self.set_lims(np.exp(-0.06*(
+                time.perf_counter() - self.start_time))*(
+                self.start_lims - self.pointer)+self.pointer)
             self.update(True)
