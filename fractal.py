@@ -513,7 +513,6 @@ class Fractal:
         be zoomed in automaticly.
         """
         if self.pointer != None:
-            self.set_lims(np.exp(-0.06*(
-                time.perf_counter() - self.start_time))*(
-                self.start_lims - self.pointer)+self.pointer)
+            factor = np.exp(-0.06*(time.perf_counter()-self.start_time))
+            self.set_lims(factor*(self.start_lims-self.pointer)+self.pointer)
             self.update(True)

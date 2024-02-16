@@ -115,7 +115,7 @@ f9_label = "e^z-1"
 f10_func = lambda z:np.exp(-3*z)-1
 f10_diff = lambda z:-3*np.exp(-3*z)
 f10_label = "e^(-2z)-1 with animation"
-f10_pointer = [np.pi/np.exp(3)+0.03,np.sin(1)*np.sqrt(2)-0.12]
+f10_pointer = [np.pi/np.exp(3)+0.03,np.sin(1)*np.sqrt(2)-0.34]
 
 f11_func = lambda z:np.sin(1/z)
 f11_diff = lambda z:-np.cos(1/z)/z**2
