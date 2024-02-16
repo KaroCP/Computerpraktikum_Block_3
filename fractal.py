@@ -19,6 +19,7 @@ import colorsys
 import time
 
 from newton import newton_approximation
+from data_collection import calculate_derivative
 
 
 # In[2]
@@ -133,9 +134,11 @@ class Fractal:
         self.fig.subplots(1)
         self.fig.subplots_adjust(left=0.15)  # make space for the slider
 
-        self.func = func
-        self.diff = diff
-        self.label = label
+        self.func = np.vectorize(func)
+        if diff == None: self.diff = np.vectorize(calculate_derivative(func))
+        else: self.diff = diff
+        if label == None: self.label = str(func)
+        else: self.label = label
 
         self.max_iteration = max_iteration
         self.tolerance = tolerance
